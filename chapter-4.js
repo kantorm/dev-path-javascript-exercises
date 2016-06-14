@@ -1,6 +1,6 @@
 function range(start, end, step) {
   if(!step) {
-    step = 1;
+    step = 1; //default value for step if not given
   }
   var rangeArray = [];
 
@@ -20,7 +20,7 @@ function range(start, end, step) {
 function sum(array) {
   var sum = 0;
 
-  for(var i = 0; i < array.length; i++) {
+  for (var i = 0; i < array.length; i++) {
     sum += array[i];
   }
   return sum;
@@ -37,7 +37,7 @@ function reverseArray(array) {
 
 function reverseArrayInPlace(array) {
   for (var i = 0; i < Math.floor(array.length / 2); i++) {
-    var toSwap = array[i];
+    var toSwap = array[i]; //swaping values in array
     array[i] = array[array.length - 1 -i];
     array[array.length -1 - i] = toSwap;
   }
@@ -47,8 +47,9 @@ function reverseArrayInPlace(array) {
 function arrayToList(array) {
   var list = null;
 
-  for (var i = array.length - 1; i >= 0; i--)
-    list = {value: array[i], rest: list};
+  for (var i = array.length - 1; i >= 0; i--) {
+    list = {value: array[i], rest: list}; //building list from inside to outside
+  }
   return list;
 }
 
@@ -66,7 +67,7 @@ function prepend(value, list) {
 }
 
 function nth(list, x) {
-  if(!list) {
+  if(!list) { //checking if list is given
     return undefined;
   }
   else if(x == 0) {
@@ -82,16 +83,16 @@ function deepEqual(x, y) {
     return true;
   }
 
-  if(x == null || typeof x != "object" || y == null || typeof y != "object") {
+  if(x == null || typeof x != "object" || y == null || typeof y != "object") { //typeof null returnes 'objet'
     return false;
   }
 
   var propsInX = 0, propsInY = 0;
 
-  for (var prop in x) {
+  for (var prop in x) { //counting properties in first object
     propsInX += 1;
   }
-  for (var prop in y) {
+  for (var prop in y) { //comparing properties and its values with second object
     propsInY += 1;
     if (!(prop in x) || !deepEqual(x[prop], y[prop]))
     return false;
