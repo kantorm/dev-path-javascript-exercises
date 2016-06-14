@@ -17,8 +17,7 @@ SmartPlantEater.prototype.act = function(view) {
 function Tiger() {
   this.energy = 90;
   this.direction = "w";
-  // Used to track the amount of prey seen per turn in the last six turns
-  this.preySeen = [];
+  this.preySeen = []; // Used to track the amount of prey seen per turn in the last eight turns
 }
 Tiger.prototype.act = function(view) {
     var seenPerTurn = this.preySeen.reduce(function(a, b) {
