@@ -48,12 +48,15 @@ for (var century in byCentury) {
 }
 
 //Every and then some
-function every(array, criteria) {
-  for (var i = 0; i < array.length; i++) {
-    if (!criteria(array[i]))
-      return false;
-  }
-  return true;
+function every(array, criterion) {
+  var isEvery;
+  array.forEach(function(element) {
+    if(!criterion(element))
+      isEvery = false;
+    else
+      isEvery = true;
+  })
+  return isEvery;
 }
 
 function some(array, criteria) {
