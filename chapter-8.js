@@ -13,7 +13,7 @@ function reliableMultiply(a, b) {
     try{
     	return primitiveMultiply(a, b)
     } catch (err) {
-      if(!(err instance of MultiplicatorUnitFailure))
+      if(!(err instanceof MultiplicatorUnitFailure))
         throw err;
     }
 }

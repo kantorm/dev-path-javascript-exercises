@@ -20,11 +20,12 @@ function Tiger() {
   this.preySeen = []; // Used to track the amount of prey seen per turn in the last eight turns
 }
 Tiger.prototype.act = function(view) {
-    var seenPerTurn = this.preySeen.reduce(function(a, b) {
-    return a + b;
-  }, 0) / this.preySeen.length;   // Average number of prey seen per turn
   var prey = view.findAll("O");
   this.preySeen.push(prey.length);
+  var seenPerTurn = this.preySeen.reduce(function(a, b) {
+  return a + b;
+}, 0) / this.preySeen.length;   // Average number of prey seen per turn
+
   if (this.preySeen.length > 8)
     this.preySeen.shift();
 
