@@ -6,7 +6,6 @@ field.addEventListener('keydown', function(event){
       event.keyCode == 'Y'.charCodeAt(0))
     event.preventDefault();
 });
-
 //Mouse Trail
 var dots = [];
 for (var i = 0; i < 10; i++) {
