@@ -9,4 +9,4 @@
     return monthNames.indexOf(name);
   };
 })(this.month = {});
-//The module is based on example presented in book
+//The module is based on example presented in book.
