@@ -10,7 +10,6 @@ topEnv["length"] = function(array) {
 topEnv["element"] = function(array, i) {
   return array[i];
 };
-
 //Comments
 function skipSpace(string) {
   var skippable = string.match(/^(\s|#.*)*/);
