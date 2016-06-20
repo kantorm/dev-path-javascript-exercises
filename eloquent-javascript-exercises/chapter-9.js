@@ -51,7 +51,6 @@ function verify(regexp, yes, no) {
 }
 
 //Numbers againg
-
 var number = /^(\+|-|)(\d+(\.\d*)?|\.\d+)([eE](\+|-|)\d+)?$/;
 
 // Tests:
