@@ -1,3 +1,4 @@
+//loopingTheTriangle
 function loopingTheTriangle() {
   var triangle = "";
 
@@ -6,7 +7,7 @@ function loopingTheTriangle() {
     console.log(triangle);
   }
 }
-
+//fizzBuzz
 function fizzBuzz() {
   for (var i = 1; i <= 100; i++) {
     if(i % 3 == 0 && i % 5 == 0) {
@@ -23,7 +24,7 @@ function fizzBuzz() {
     }
   }
 }
-
+//chessBoard
 function chessBoard() {
   var board = "";
   var size = 8;
@@ -42,6 +43,6 @@ function chessBoard() {
   console.log(board);
 }
 
-//loopingTheTriangle();
-//fizzBuzz();
-//chessBoard();
+loopingTheTriangle();
+fizzBuzz();
+chessBoard();
