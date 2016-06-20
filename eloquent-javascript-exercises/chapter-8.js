@@ -42,4 +42,5 @@ try {
 } catch (err) {
   console.log("Error raised:", err);
 }
+
 console.log(box.locked);
