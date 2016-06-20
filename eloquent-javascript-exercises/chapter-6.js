@@ -36,7 +36,6 @@ StretchCell.prototype.draw = function(height, width) {
 }
 
 //Sequence Interface
-
 function logFive(sequence) {
   for (var i = 0; i < 5; i++) {
     if (!sequence.next())
