@@ -1,3 +1,4 @@
+//generating table
 function generateTable() {
   var table = document.createElement('table');
   table.setAttribute('style', 'width: 90%; height: 90%; border: solid 2px black; border-collapse: collapse; margin: 5em');
