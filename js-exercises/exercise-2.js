@@ -1,6 +1,7 @@
 function createInput(){
     var input = document.createElement('input');
     var styleInput = document.createElement('textarea');
+    var preTag = document.createElement('pre');
 
     document.body.appendChild(input);
     document.body.appendChild(styleInput);
@@ -41,15 +42,15 @@ function createInput(){
       }
     };
     var generated = generteTag(tagToGenerate);
-    console.log(Object.keys(generated));
-    styleInput.onblur = function() {
+
+      styleInput.onblur = function() {
       var styleInputValue = document.getElementById('styleInputId').value;
 
       generated.setAttribute("style", styleInputValue);
     }
   }
 }
-function generteTag(toGenerate, preTag) {
+function generteTag(toGenerate) {
   var element = document.createElement(toGenerate.tagType());
   document.body.appendChild(element);
 
