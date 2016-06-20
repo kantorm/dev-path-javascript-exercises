@@ -1,3 +1,4 @@
+//range
 function range(start, end, step) {
   if(!step) {
     step = 1; //default value for step if not given
@@ -16,7 +17,7 @@ function range(start, end, step) {
     }
   return rangeArray;
 }
-
+//sum
 function sum(array) {
   var sum = 0;
 
@@ -25,7 +26,7 @@ function sum(array) {
   }
   return sum;
 }
-
+//reverseArray
 function reverseArray(array) {
   var reversedArray = [];
 
@@ -52,7 +53,7 @@ function arrayToList(array) {
   }
   return list;
 }
-
+//listToArray
 function listToArray(list) {
   var array = [];
 
