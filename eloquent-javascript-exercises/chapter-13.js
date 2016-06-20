@@ -26,7 +26,6 @@ function buildTable(data) {
 
   return table;
 }
-
 //By tag name
 function byTagName(node, tagName) {
   var tagsArray = [];
@@ -47,7 +46,6 @@ function byTagName(node, tagName) {
     return found;
   }
 }
-
 //The cat's hat
 var cat = document.querySelector("#cat");
 var hat = document.querySelector("#hat");
