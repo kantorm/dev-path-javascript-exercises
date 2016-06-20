@@ -1,3 +1,4 @@
+//min
 function min(a, b) {
   if(a < b) {
     return a;
@@ -6,7 +7,7 @@ function min(a, b) {
     return b;
   }
 }
-
+//isEven
 function isEven(a) {
   if (a == 0) {
     return true;
@@ -18,7 +19,7 @@ function isEven(a) {
     return isEven(a-2);
   }
 }
-
+//Bean counter
 function countBs(string) {
   var counter = 0;
 
