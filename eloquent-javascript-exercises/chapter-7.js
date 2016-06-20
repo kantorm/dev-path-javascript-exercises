@@ -1,3 +1,4 @@
+//Electronic life exercises
 function SmartPlantEater() {
   this.energy = 30;
   this.direction = "e";
