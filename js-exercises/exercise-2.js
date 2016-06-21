@@ -41,12 +41,17 @@ function createInput(){
           return inputValue.slice(inputValue.indexOf(' ')+1, inputValue.length).split(' ');
       }
     };
+
     var generated = generteTag(tagToGenerate);
 
       styleInput.onblur = function() {
       var styleInputValue = document.getElementById('styleInputId').value;
 
       generated.setAttribute("style", styleInputValue);
+
+      preTag.innerText = String(generated.tagName + " " + generated.className + " " + generated.id +
+      " " + generated.style + " " + generated.textContent + "</"+generated.tagName+">");
+      document.body.appendChild(preTag);
     }
   }
 }
