@@ -10,7 +10,7 @@ function generateTable() {
 
     for (var j = 0; j < 12; j++) {
       var cell = document.createElement('td');
-      cell.setAttribute('style', 'height: 50px; width:50px; border: solid black 1px; transition: background 2s;')
+      cell.setAttribute('style', 'height: 50px; width:50px; border: solid black 1px;')
       row.appendChild(cell);
     }
     table.appendChild(row);
@@ -22,7 +22,11 @@ function generateTable() {
           cell.style.background = "#000";
       });
       cell.addEventListener("mouseout", function(event) {
-          cell.style.background = "";
+        for (var i = 0; i <= 255; i++) {
+            setTimeout(function(i) {
+              cell.style.background = "rgb("+i + ", " + i + ", " + i + ")";
+          }, i * 3, i)
+        }
       });
     });
   }
