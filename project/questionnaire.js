@@ -2,7 +2,8 @@ function Questionnaire(name) {
   this.name = name;
   this.questions = [{
     question: this.question,
-    answers: []
+    answers: [],
+    fieldType: this.type
   }];
 }
 
@@ -32,6 +33,20 @@ createButton.addEventListener('click', function() {
     addQuestionButton.textContent = 'add question';
     document.body.appendChild(addQuestionButton);
 
+    var fieldTypeSelect = document.createElement('select');
+
+    var checkbox = document.createElement('option');
+    checkbox.value = 'checkbox'
+    checkbox.textContent = 'checkbox';
+
+    var radio = document.createElement('option');
+    radio.value = 'radio';
+    radio.textContent = 'radio';
+
+    fieldTypeSelect.appendChild(radio)
+    fieldTypeSelect.appendChild(checkbox);
+    document.body.appendChild(fieldTypeSelect);
+
     var answersToAdd = [];
 
     addAnswerButton.addEventListener('click', function() {
@@ -40,7 +55,8 @@ createButton.addEventListener('click', function() {
     });
 
     addQuestionButton.addEventListener('click', function() {
-      que.questions.push({question: questionInput.value, answers: answersToAdd});
+      var choose = fieldTypeSelect.value;
+      que.questions.push({question: questionInput.value, answers: answersToAdd, type: choose});
       answersToAdd = [];
       questionInput.value = "";
       answerInput.value = "";
@@ -62,13 +78,14 @@ createButton.addEventListener('click', function() {
           var questionHeader = document.createElement('h3');
           questionHeader.textContent = question.question;
           container.appendChild(questionHeader);
+          var type = question.type;
 
           question.answers.forEach(function(answer) {
             var label = document.createElement('label');
             label.textContent = answer;
 
             var answerOption = document.createElement('input');
-            answerOption.type = 'radio';
+            answerOption.type = type;
             answerOption.name = questionHeader.textContent;
             answerOption.value = answer;
 
@@ -78,8 +95,9 @@ createButton.addEventListener('click', function() {
         });
 
         Questionnaires.push(que);
-        
+
         nameInput.value = "";
+        document.body.removeChild(fieldTypeSelect);
         document.body.removeChild(questionInput);
         document.body.removeChild(answerInput);
         document.body.removeChild(addAnswerButton);
