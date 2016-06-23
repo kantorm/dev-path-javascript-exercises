@@ -1,4 +1,4 @@
-function Questionnaire(name) {
+function Survey(name) {
   this.name = name;
   this.questions = [{
     question: this.question,
@@ -7,7 +7,7 @@ function Questionnaire(name) {
   }];
 }
 
-var Questionnaires = [];
+var Surveys = [];
 
 var nameInput = document.createElement('input');
 document.body.appendChild(nameInput);
@@ -17,7 +17,7 @@ createButton.textContent = 'create';
 document.body.appendChild(createButton);
 
 createButton.addEventListener('click', function() {
-    var que = new Questionnaire(nameInput.value);
+    var que = new Survey(nameInput.value);
 
     var questionInput = document.createElement('input');
     document.body.appendChild(questionInput);
@@ -96,7 +96,7 @@ createButton.addEventListener('click', function() {
           });
         });
 
-        Questionnaires.push(que);
+        Surveys.push(que);
 
         nameInput.value = "";
         document.body.removeChild(fieldTypeSelect);
