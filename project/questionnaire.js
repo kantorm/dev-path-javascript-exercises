@@ -3,8 +3,10 @@ function Questionnaire(name) {
   this.questions = [{
     question: this.question,
     answers: []
-  }]
+  }];
 }
+
+var Questionnaires = [];
 
 var nameInput = document.createElement('input');
 document.body.appendChild(nameInput);
@@ -74,6 +76,14 @@ createButton.addEventListener('click', function() {
             container.appendChild(label);
           });
         });
-      });
 
+        Questionnaires.push(que);
+        
+        nameInput.value = "";
+        document.body.removeChild(questionInput);
+        document.body.removeChild(answerInput);
+        document.body.removeChild(addAnswerButton);
+        document.body.removeChild(addQuestionButton);
+        document.body.removeChild(generate);
+      });
     });
