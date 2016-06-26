@@ -1,33 +1,26 @@
 function Survey(name) {
   this.name = name;
-  this.questions = [{
-    question: this.question,
-    answers: [],
-    fieldType: this.type
-  }];
+  this.questions = [];
 }
 
-var Surveys = [];
+var que = new Survey();
 
-var nameInput = document.createElement('input');
-document.body.appendChild(nameInput);
+var fieldsWraper = document.createElement('div');
+fieldsWraper.id = 'fieldsWraper';
+document.body.appendChild(fieldsWraper);
 
-var createButton = document.createElement('button');
-createButton.textContent = 'create';
-document.body.appendChild(createButton);
+function generateFields() {
 
-createButton.addEventListener('click', function() {
-    var que = new Survey(nameInput.value);
+    var nameInput = document.createElement('input');
+    if(que.name == undefined || que.name == "")
+      nameInput.placeholder = "NAME";
+    else
+        nameInput.value = que.name
+    fieldsWraper.appendChild(nameInput);
 
-    var questionInput = document.createElement('input');
-    document.body.appendChild(questionInput);
-
-    var answerInput = document.createElement('input');
-    document.body.appendChild(answerInput);
-
-    var addAnswerButton = document.createElement('button');
-    addAnswerButton.textContent = 'add answer';
-    document.body.appendChild(addAnswerButton);
+    var questionInput = document.createElement('input')
+    questionInput.placeholder = "QUESTION";
+    fieldsWraper.appendChild(questionInput);
 
     var fieldTypeSelect = document.createElement('select');
 
@@ -39,15 +32,28 @@ createButton.addEventListener('click', function() {
     radio.value = 'radio';
     radio.textContent = 'radio';
 
+    var input = document.createElement('option');
+    input.value = 'input';
+    input.textContent = 'input';
+
     fieldTypeSelect.appendChild(radio)
     fieldTypeSelect.appendChild(checkbox);
-    document.body.appendChild(fieldTypeSelect);
+    fieldTypeSelect.appendChild(input);
+    fieldsWraper.appendChild(fieldTypeSelect);
+
+    var answerInput = document.createElement('input');
+    answerInput.placeholder = "ANSWER";
+    fieldsWraper.appendChild(answerInput);
+
+    var answersToAdd = [];
+
+    var addAnswerButton = document.createElement('button');
+    addAnswerButton.textContent = 'add answer';
+    fieldsWraper.appendChild(addAnswerButton);
 
     var addQuestionButton = document.createElement('button');
     addQuestionButton.textContent = 'add question';
-    document.body.appendChild(addQuestionButton);
-
-    var answersToAdd = [];
+    fieldsWraper.appendChild(addQuestionButton);
 
     addAnswerButton.addEventListener('click', function() {
       answersToAdd.push(answerInput.value);
@@ -55,28 +61,37 @@ createButton.addEventListener('click', function() {
     });
 
     addQuestionButton.addEventListener('click', function() {
+      if(que.name == undefined) {
+        que.name = nameInput.value;
+      }
       var choose = fieldTypeSelect.value;
       que.questions.push({question: questionInput.value, answers: answersToAdd, type: choose});
+
       answersToAdd = [];
-      questionInput.value = "";
       answerInput.value = "";
+
+      var newLine = document.createElement('br');
+      fieldsWraper.appendChild(newLine);
+
+      generateFields();
     });
+}
 
     var generate = document.createElement('button');
     generate.textContent = 'generate';
     document.body.appendChild(generate);
 
-    generate.addEventListener('click', function() {
-        var form = document.createElement('form');
+    function generateSurvey(toGenerate) {
         var container = document.createElement('div');
+        var form = document.createElement('form');
+
         document.body.appendChild(container);
         container.appendChild(form);
 
         var header = document.createElement('h1');
-        header.textContent = que.name;
+        header.textContent = toGenerate.name;
         form.appendChild(header);
-
-        que.questions.forEach(function(question) {
+        toGenerate.questions.forEach(function(question) {
           var questionHeader = document.createElement('h3');
           questionHeader.textContent = question.question;
           form.appendChild(questionHeader);
@@ -95,15 +110,27 @@ createButton.addEventListener('click', function() {
             form.appendChild(label);
           });
         });
+        var submitButton = document.createElement('input');
+        submitButton.type = 'submit';
+        submitButton.value = 'submit';
+        form.appendChild(submitButton);
 
-        Surveys.push(que);
+        sessionStorage.setItem(toGenerate.name, JSON.stringify(toGenerate));
+        que = new Survey();
+      }
 
-        nameInput.value = "";
-        document.body.removeChild(fieldTypeSelect);
-        document.body.removeChild(questionInput);
-        document.body.removeChild(answerInput);
-        document.body.removeChild(addAnswerButton);
-        document.body.removeChild(addQuestionButton);
-        document.body.removeChild(generate);
-      });
+    generate.addEventListener('click', function() {
+      generateSurvey(que);
     });
+
+    generateFields();
+
+  function generateFormStorage() {
+
+    for (var survey in sessionStorage) {
+      var parsed = JSON.parse(sessionStorage[survey]);
+      console.log(parsed)
+      generateSurvey(parsed);
+    }
+  }
+generateFormStorage();
