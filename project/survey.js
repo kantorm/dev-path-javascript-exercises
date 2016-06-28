@@ -63,6 +63,10 @@ function generateFields() {
   answerInput.placeholder = "ANSWER";
   fieldsWraper.appendChild(answerInput);
 
+  fieldTypeSelect.addEventListener('change', function() {
+    if (fieldTypeSelect.value == 'input')
+      answerInput.disabled = true;ś
+  })
   var answersToAdd = [];
 
   var addAnswerButton = document.createElement('button');
