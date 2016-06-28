@@ -5,9 +5,27 @@ function Survey(name) {
 
 var que = new Survey();
 
+var form = document.createElement('form');
+form.method = 'POST';
+form.action = '/surveys'
+document.body.appendChild(form)
+
+var generate = document.createElement('input');
+generate.type = 'submit';
+form.appendChild(generate);
+
+var surveyPattern = document.createElement('input');
+surveyPattern.style.display = 'none';
+surveyPattern.name = 'survey';
+form.appendChild(surveyPattern);
+
 var fieldsWraper = document.createElement('div');
 fieldsWraper.id = 'fieldsWraper';
 document.body.appendChild(fieldsWraper);
+
+generate.addEventListener('click', function() {
+  generateSurvey(que);
+});
 
 function generateFields() {
 
@@ -82,9 +100,10 @@ function generateFields() {
 }
 
 function generateSurvey(toGenerate) {
+
   var container = document.createElement('div');
   var form = document.createElement('form');
-  form.action = "results";
+  form.action = "/";
   form.method = "POST";
 
   document.body.appendChild(container);
@@ -114,22 +133,23 @@ function generateSurvey(toGenerate) {
       form.appendChild(label);
     });
   });
+  var formName = document.createElement('input');
+  formName.style.display = 'none';
+  formName.name = 'survey'
+  formName.value = toGenerate.name;
+  form.appendChild(formName);
+
   var submitButton = document.createElement('input');
   submitButton.type = 'submit';
   submitButton.value = 'submit';
   form.appendChild(submitButton);
 
   sessionStorage.setItem(toGenerate.name, JSON.stringify(toGenerate));
+
+  surveyPattern.value = JSON.stringify(que);
+  console.log(surveyPattern.value);
   que = new Survey();
 }
-
-var generate = document.createElement('button');
-generate.textContent = 'generate';
-document.body.appendChild(generate);
-
-generate.addEventListener('click', function() {
-  generateSurvey(que);
-});
 
 function generateFormStorage() {
   for (var survey in sessionStorage) {
