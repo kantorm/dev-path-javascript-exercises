@@ -4,68 +4,89 @@ var fs = require('fs');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
-var test = require('./test');
-
+var pug = require('pug');
 
 var uri = "mongodb://localhost:27017/data";
-var survey = ""
+var survey = "";
+var answersArray = [];
+var surveysArray = [];
 
-fs.readFile('survey.js', 'utf8', function(error, script) {
+fs.readFile('views/survey.js', 'utf8', function(error, script) {
   if (error)
-  throw error
+    throw error
   survey += script;
-})
+});
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 app.use(express.static('public'));
+app.set('view engine', 'pug');
 
 app.get('/', function (req, res) {
-  res.send('<html><head></head><body><script>'+survey+'</script></body></html>');
+  MongoClient.connect(uri, function(error, db){
+    if (error)
+      throw error;
+    findAnswers();
+    res.render('index', {surveyTemplate: survey, answers: answersArray});
+  })
 });
 
 app.post('/', urlencodedParser, function (req, res) {
-  res.send('<html><head></head><body><script>'+survey+'</script></body></html>');
-
   var response = req.body;
-  console.log(response);
-  res.end(MongoClient.connect(uri, function(error, db) {
-    if (error)
-      return console.dir(error);
 
-      db.collection('answers').insertOne(response, function(err, result) {
-        assert.equal(err, null);
-        console.log('Inserted a document into the answers collection.');
-        db.close();
-      });
-  }))
+  MongoClient.connect(uri, function(error, db) {
+  //saving answers in database
+    if (error)
+      return console.log(error);
+    db.collection('answers').insertOne(response, function(err, result) {
+      assert.equal(err, null);
+      console.log('Inserted a document into the answers collection.');
+    });
+    findAnswers(db, response);
+    res.render('index', {surveyTemplate: survey, answers: answersArray});
+  })
 });
 
 app.post('/surveys', urlencodedParser, function (req, res) {
-  res.send('<html><head></head><body><script>'+survey+'</script></body></html>');
+  res.render('index', {surveyTemplate: survey});
 
   var response = req.body;
-  console.log(response);
-  res.end(MongoClient.connect(uri, function(error, db) {
-    if (error)
-      return console.dir(error);
 
-      db.collection('surveys').insertOne(response, function(err, result) {
-        assert.equal(err, null);
-        console.log('Inserted a document into the surveys collection.');
-        db.close();
-      });
+  //Adding survey into databse
+  res.send(MongoClient.connect(uri, function(error, db) {
+    if (error)
+      return console.log(error);
+    db.collection('surveys').insertOne(response, function(err, result) {
+      assert.equal(err, null);
+      console.log('Inserted a document into the surveys collection.');
+
+      db.close();
+    });
   }))
+  res.end()
 });
 
-var findAnswers = function(db, callback) {
-  var cursor = db.collection('answers').find();
+var findAnswers = function(db, response) {
+  var array = [];
+  var cursor = db.collection('answers').find({survey: response.survey});
+    cursor.each(function(err, doc) {
+    assert.equal(err, null);
+    if (doc != null) {
+      array.push(doc);
+    } else {
+      answersArray = array;
+    }
+  });
+};
+var findSurveys = function(db, callback) {
+  var array = [];
+  var cursor = db.collection('surveys').find();
   cursor.each(function(err, doc) {
     assert.equal(err, null);
     if (doc != null) {
-      console.log(doc);
+      array.push(doc)
     } else {
-      callback();
+      surveysArray = array;
     }
   });
 };

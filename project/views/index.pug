@@ -1,4 +1,11 @@
 html
   head
     body
-      script= message
+      script= surveyTemplate
+      if answers
+        div
+          h1= 'Wszystkie odpowiedzi na pytania w tej ankiecie'
+          each answer in answers
+            ul
+              each val, index in answer
+                li= index + ': ' + val
