@@ -1,11 +1,11 @@
+doctype html
 html
   head
     body
       script= surveyTemplate
-      if answers
+      if answers.length != 0
         div
-          h1= 'Wszystkie odpowiedzi na pytania w tej ankiecie'
-          each answer in answers
+          h3= 'Twoje odpowiedzi'
             ul
-              each val, index in answer
-                li= index + ': ' + val
+              each answer, question in answers
+                li= question + ': ' + answer
