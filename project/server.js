@@ -9,7 +9,7 @@ var pug = require('pug');
 var uri = "mongodb://localhost:12345/data";
 var surveyTemplate = "";
 var answersArray = [];
-var surveysArray = [];
+var questionsArray = [];
 
 fs.readFile('views/survey.js', 'utf8', function(error, script) {
   if (error)
@@ -37,6 +37,9 @@ app.post('/', urlencodedParser, function (req, res) {
       assert.equal(err, null);
       console.log('Inserted a document into the answers collection.');
 
+      findQuestionFromSurvey(db, response);
+      aggregated(db, response);
+    
       res.render('index', {surveyTemplate: surveyTemplate, answers: response});
   })
 });
@@ -60,40 +63,45 @@ app.post(/\w|\s/g , urlencodedParser, function (req, res) {
 
 //queries to database
 var findQuestionFromSurvey = function(db, response) {
+  var array = [];
   var cursor = db.collection('surveys').find({name: response.survey})
     cursor.each(function(err, doc) {
       assert.equal(err, null);
       if (doc != null) {
-        console.log(doc.questions);
+        array.push(doc.questions);
+    } else {
+      questionsArray = array;
     }
   });
 };
 
-var findAnswers = function(db, response) {
-  var array = [];
-  var cursor = db.collection('answers').find({survey: response.survey});
-    cursor.each(function(err, doc) {
-    assert.equal(err, null);
-    if (doc != null) {
-      array.push(doc);
-    } else {
-      answersArray = array;
-    }
+// var findAnswers = function(db, response) {
+//   var array = [];
+//   var cursor = db.collection('answers').find({survey: response.survey});
+//     cursor.each(function(err, doc) {
+//     assert.equal(err, null);
+//     if (doc != null) {
+//       array.push(doc);
+//     } else {
+//       answersArray = array;
+//     }
+//   });
+// };
+//beta aggregation function
+function aggregated(db, response) {
+  questionsArray.forEach(function(question) {
+    var aggregateAnswers = function(db) {
+      db.collection('answers').aggregate(
+        [
+          {$match: {'survey': $response.survey}},
+          {$group: {"_id": $question.question, "count": {$sum: 1}}}
+        ]).toArray(function(err, result) {
+          assert.equal(err, null);
+          console.log(result);
+        });
+    };
   });
-};
-
-var findSurveys = function(db) {
-  var array = [];
-  var cursor = db.collection('surveys').find();
-  cursor.each(function(err, doc) {
-    assert.equal(err, null);
-    if (doc != null) {
-      array.push(doc)
-    } else {
-      surveysArray = array;
-    }
-  });
-};
+}
 
 var server = app.listen(8081, function () {
 
