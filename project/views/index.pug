@@ -8,13 +8,14 @@ html
             input#nameField(name= 'surveyName', placeholder= 'Name')
             input#questionField(name= 'question', placeholder= 'Question')
             select#fieldType
-              option(vlue= 'radio') radio
-              option(vlue= 'checkbox') checkbox
-              option(vlue= 'input') input
+              option(value= 'radio') radio
+              option(value= 'checkbox') checkbox
+              option(value= 'input') input
             input#answerField(name= 'answer', placeholder= 'Answer')
             input#addAnswer(type= 'button', value= 'Add answer')
             input#addQuestion(type= 'button', value= 'Add question')
-            input(type= 'submit', value= 'GENERATE')
+            input#generate(type= 'button', value= 'GENERATE')
+      div#generated
       script.
 
         var surveyToGenerate = new Object();
@@ -40,8 +41,22 @@ html
               });
 
             answers = [];
-            $('#questionField').val('')
+            $('#questionField').val('').focus();
             $('#answerField').val('');
-            surveyToGenerate = JSON.stringify(surveyToGenerate);
-            alert(surveyToGenerate);
+        });
+
+        $('#generate').click(function() {
+          sessionStorage.setItem(surveyToGenerate.name, JSON.stringify(surveyToGenerate));
+          generateSurvey(surveyToGenerate);
           });
+
+          function generateSurvey(toGenerate) {
+            $('#generated').append('<h1>'+toGenerate.name+'</h1>')
+            toGenerate.questions.forEach(function(question){
+              $('#generated').append('<h3>'+question.questionName+'</h3>')
+              question.answers.forEach(function(answer) {
+                var input = '<label><input name="'+question.questionName+'" type="'+question.fieldType+'">'+answer+'</label>';
+                $('#generated').append($(input))
+                });
+              });
+          }
