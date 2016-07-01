@@ -1,11 +1,47 @@
 doctype html
 html
   head
-    body
-      script= surveyTemplate
-      if answers.length != 0
-        div
-          h3= 'Twoje odpowiedzi'
-            ul
-              each answer, question in answers
-                li= question + ': ' + answer
+    script(src= 'https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js')
+  body
+      div
+        form(method= 'POST', action= '/surveys')
+            input#nameField(name= 'surveyName', placeholder= 'Name')
+            input#questionField(name= 'question', placeholder= 'Question')
+            select#fieldType
+              option(vlue= 'radio') radio
+              option(vlue= 'checkbox') checkbox
+              option(vlue= 'input') input
+            input#answerField(name= 'answer', placeholder= 'Answer')
+            input#addAnswer(type= 'button', value= 'Add answer')
+            input#addQuestion(type= 'button', value= 'Add question')
+            input(type= 'submit', value= 'GENERATE')
+      script.
+
+        var surveyToGenerate = new Object();
+        surveyToGenerate.questions = [];
+
+        var answers = [];
+        $('#addAnswer').click(function() {
+          var toAdd = $('#answerField').val();
+          answers.push(toAdd);
+          $('#answerField').val('');
+          $('#answerField').focus();
+        });
+
+        $('#addQuestion').click(function() {
+            if (surveyToGenerate.name == undefined)
+              surveyToGenerate.name = $('#nameField').val();
+
+            var fieldType = $('#fieldType').val();
+            surveyToGenerate.questions.push({
+              questionName: $('#questionField').val(),
+              answers: answers,
+              fieldType: fieldType
+              });
+
+            answers = [];
+            $('#questionField').val('')
+            $('#answerField').val('');
+            surveyToGenerate = JSON.stringify(surveyToGenerate);
+            alert(surveyToGenerate);
+          });
