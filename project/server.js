@@ -16,7 +16,10 @@ app.use(express.static('public'));
 app.set('view engine', 'pug');
 
 app.get(/\w*|\s/g, function (req, res) {
-    res.render('index', {answers: 0});
+  MongoClient.connect(uri, function(error, db){
+    findSurveys(db);
+    res.render('index', {answers: 0, surveys: surveysArray});
+  })
 });
 
 app.post('/', urlencodedParser, function (req, res) {
@@ -29,9 +32,8 @@ app.post('/', urlencodedParser, function (req, res) {
       assert.equal(err, null);
       console.log('Inserted a document into the answers collection.');
 //aggregation
-      // findQuestionFromSurvey(db, response);
-      // console.log(questionsArray);
-      // aggregateAnswers(db, response);
+       findQuestionFromSurvey(db, response);
+       aggregateAnswers(db, response);
 
       res.render('index', {answers: response});
     })
@@ -39,9 +41,11 @@ app.post('/', urlencodedParser, function (req, res) {
 });
 
 app.post('/surveys' , urlencodedParser, function (req, res) {
-  var response = req.body;
-  console.log(response);
-  // //Adding survey into databse
+  var response = {}
+  for (var element in req.body) {
+    response.survey = element
+  }
+ //Adding survey into databse
   MongoClient.connect(uri, function(error, db) {
     if (error)
       return console.log(error);
@@ -50,18 +54,20 @@ app.post('/surveys' , urlencodedParser, function (req, res) {
       console.log('Inserted a document into the surveys collection.');
     });
   });
-  // res.render('index', {surveyTemplate: surveyTemplate, answers: []});
+
 });
 
 //queries to database
 //fiding questions for aggregation
 var findQuestionFromSurvey = function(db, response) {
   var array = [];
-  var cursor = db.collection('surveys').find({name: response.survey})
+  var cursor = db.collection('surveys').find()
     cursor.each(function(err, doc) {
       assert.equal(err, null);
       if (doc != null) {
-        array.push(doc.questions);
+        doc = JSON.parse(doc.survey)
+        if (doc.name == response.surveyName)
+          array = doc.questions;
     } else {
       questionsArray = array;
     }
@@ -71,16 +77,14 @@ var findQuestionFromSurvey = function(db, response) {
 //beta aggregation function
 function aggregateAnswers(db, response) {
   questionsArray.forEach(function(question) {
-    var aggregateAnswers = function(db) {
-      db.collection('answers').aggregate(
+     db.collection('answers').aggregate(
         [
-          {$match: {'survey': $response.survey}},
-          {$group: {"_id": $question.question, "count": {$sum: 1}}}
+          {$match: {'survey': response.surveyName}},
+          {$group: {"_id": question.questionName, "count": {$sum: 1}}}
         ]).toArray(function(err, result) {
           assert.equal(err, null);
           console.log(result);
         });
-    };
   });
 }
 
@@ -88,7 +92,14 @@ function aggregateAnswers(db, response) {
 var findSurveys = function(db) {
   var array = [];
   var cursor = db.collection('surveys').find();
-    surveysArray = cursor.toArray();
+    cursor.each(function(err, doc) {
+      assert.equal(err, null);
+      if (doc != null) {
+        array.push(doc);
+      } else {
+        surveysArray = array;
+      }
+    })
 }
 
 var server = app.listen(8081, function () {

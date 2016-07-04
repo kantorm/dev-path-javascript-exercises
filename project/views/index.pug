@@ -4,7 +4,7 @@ html
     script(src= 'https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js')
   body
       div
-        form(method= 'POST', action= '/surveys')
+        form#surveyFields
             input#nameField(name= 'surveyName', placeholder= 'Name')
             input#questionField(name= 'question', placeholder= 'Question')
             select#fieldType
@@ -14,7 +14,7 @@ html
             input#answerField(name= 'answer', placeholder= 'Answer')
             input#addAnswer(type= 'button', value= 'Add answer')
             input#addQuestion(type= 'button', value= 'Add question')
-            input#generate(type= 'button', value= 'GENERATE')
+            input#generate(type= 'submit', value= 'GENERATE')
       div#generated
       if answers != 0
         div
@@ -25,7 +25,7 @@ html
       script.
 
         $(document).ready(generateFormStorage())
-        
+
         var surveyToGenerate = new Object();
         surveyToGenerate.questions = [];
 
@@ -52,12 +52,19 @@ html
             $('#answerField').val('');
         });
 
-        $('#generate').click(function() {
-          sessionStorage.setItem(surveyToGenerate.name, JSON.stringify(surveyToGenerate));
+        $('#surveyFields').submit(function(event) {
+
+          var data = JSON.stringify(surveyToGenerate)
+          $.post('/surveys', data)
+
+          sessionStorage.setItem(surveyToGenerate.name, data);
           generateSurvey(surveyToGenerate);
+
+          event.preventDefault();
           });
 
           function generateSurvey(toGenerate) {
+
             var formId = toGenerate.name.replace(/\s/g , '_');
             $('#generated').append($('<form id='+formId+'>'));
             formId = '#'+formId;
@@ -78,7 +85,6 @@ html
               $(formId).append(submit);
 
               $('#nameField').val('').focus();
-              $.post('/surveys', toGenerate)
 
               surveyToGenerate = {};
               surveyToGenerate.questions = [];
