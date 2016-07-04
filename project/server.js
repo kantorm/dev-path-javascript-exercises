@@ -6,7 +6,7 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var pug = require('pug');
 
-var uri = "mongodb://localhost:12345/data";
+var uri = "mongodb://localhost:27017/data";
 var surveysArray = [];
 var questionsArray = [];
 
@@ -16,7 +16,7 @@ app.use(express.static('public'));
 app.set('view engine', 'pug');
 
 app.get(/\w*|\s/g, function (req, res) {
-    res.render('index', {});
+    res.render('index', {answers: 0});
 });
 
 app.post('/', urlencodedParser, function (req, res) {
@@ -29,11 +29,11 @@ app.post('/', urlencodedParser, function (req, res) {
       assert.equal(err, null);
       console.log('Inserted a document into the answers collection.');
 //aggregation
-      findQuestionFromSurvey(db, response);
-      console.log(questionsArray);
-      aggregateAnswers(db, response);
+      // findQuestionFromSurvey(db, response);
+      // console.log(questionsArray);
+      // aggregateAnswers(db, response);
 
-      res.render('index', {surveyTemplate: surveyTemplate, answers: response});
+      res.render('index', {answers: response});
     })
   });
 });
@@ -41,16 +41,16 @@ app.post('/', urlencodedParser, function (req, res) {
 app.post('/surveys' , urlencodedParser, function (req, res) {
   var response = req.body;
   console.log(response);
-  // var response = JSON.parse(response.survey);
+   var response = JSON.parse(response);
   // //Adding survey into databse
-  // MongoClient.connect(uri, function(error, db) {
-  //   if (error)
-  //     return console.log(error);
-  //   db.collection('surveys').insertOne(response, function(err, result) {
-  //     assert.equal(err, null);
-  //     console.log('Inserted a document into the surveys collection.');
-  //   });
-  // });
+  MongoClient.connect(uri, function(error, db) {
+    if (error)
+      return console.log(error);
+    db.collection('surveys').insertOne(response, function(err, result) {
+      assert.equal(err, null);
+      console.log('Inserted a document into the surveys collection.');
+    });
+  });
   // res.render('index', {surveyTemplate: surveyTemplate, answers: []});
 });
 

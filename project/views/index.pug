@@ -16,6 +16,12 @@ html
             input#addQuestion(type= 'button', value= 'Add question')
             input#generate(type= 'button', value= 'GENERATE')
       div#generated
+      if answers != 0
+        div
+          h3= 'Twoje odpowiedzi'
+          ul
+            each answer, question in answers
+              li= question + ': ' + answer
       script.
 
         var surveyToGenerate = new Object();
@@ -50,20 +56,26 @@ html
           });
 
           function generateSurvey(toGenerate) {
-            var id = toGenerate.name.replace(/\s/g , '_')
-            $('#generated').append($('<form id='+id+'>'));
-            $('#'+id).attr({action: '/', method: 'POST'})
-            $('#'+id).append('<h1>'+toGenerate.name+'</h1>')
+            var formId = toGenerate.name.replace(/\s/g , '_');
+            $('#generated').append($('<form id='+formId+'>'));
+            formId = '#'+formId;
+            $(formId).attr({action: '/', method: 'POST'});
+            $(formId).append('<h1>'+toGenerate.name+'</h1>');
+            $(formId).append('<input style="display: none" value="'+toGenerate.name+'" name="surveyName">')
+
             toGenerate.questions.forEach(function(question){
-              $('#'+id).append('<h3>'+question.questionName+'</h3>')
+              $(formId).append('<h3>'+question.questionName+'</h3>')
+
               question.answers.forEach(function(answer) {
-                var input = '<label><input name="'+question.questionName+'" type="'+question.fieldType+'">'+answer+'</label>';
-                $('#'+id).append($(input));
+                var input = '<label><input name="'+question.questionName+
+                '" type="'+question.fieldType+'" value="'+answer+'">'+answer+'</label>';
+                $(formId).append($(input));
                 });
               });
               var submit = '<input type = "submit"/>'
-              $('#'+id).append(submit);
+              $(formId).append(submit);
               $('#nameField').val('').focus();
+              $.post('/surveys', toGenerate)
               surveyToGenerate = {};
               surveyToGenerate.questions = [];
           }
