@@ -79,7 +79,7 @@ function aggregateAnswers(db, response) {
   questionsArray.forEach(function(question) {
      db.collection('answers').aggregate(
         [
-          {$match: {'survey': response.surveyName}},
+          {$match: {$and: [{'surveyName': response.surveyName}, {'tak czy nie': 'nie'}, {'p': 'an'}]}},
           {$group: {"_id": question.questionName, "count": {$sum: 1}}}
         ]).toArray(function(err, result) {
           assert.equal(err, null);
