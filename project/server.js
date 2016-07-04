@@ -41,7 +41,6 @@ app.post('/', urlencodedParser, function (req, res) {
 app.post('/surveys' , urlencodedParser, function (req, res) {
   var response = req.body;
   console.log(response);
-   var response = JSON.parse(response);
   // //Adding survey into databse
   MongoClient.connect(uri, function(error, db) {
     if (error)

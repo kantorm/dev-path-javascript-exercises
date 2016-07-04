@@ -24,6 +24,8 @@ html
               li= question + ': ' + answer
       script.
 
+        $(document).ready(generateFormStorage())
+        
         var surveyToGenerate = new Object();
         surveyToGenerate.questions = [];
 
@@ -74,8 +76,16 @@ html
               });
               var submit = '<input type = "submit"/>'
               $(formId).append(submit);
+
               $('#nameField').val('').focus();
               $.post('/surveys', toGenerate)
+
               surveyToGenerate = {};
               surveyToGenerate.questions = [];
+          }
+          function generateFormStorage() {
+            for (var survey in sessionStorage) {
+              var parsed = JSON.parse(sessionStorage[survey]);
+              generateSurvey(parsed);
+            }
           }
