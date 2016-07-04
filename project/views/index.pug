@@ -25,8 +25,7 @@ html
         $('#addAnswer').click(function() {
           var toAdd = $('#answerField').val();
           answers.push(toAdd);
-          $('#answerField').val('');
-          $('#answerField').focus();
+          $('#answerField').val('').focus();
         });
 
         $('#addQuestion').click(function() {
@@ -51,12 +50,20 @@ html
           });
 
           function generateSurvey(toGenerate) {
-            $('#generated').append('<h1>'+toGenerate.name+'</h1>')
+            var id = toGenerate.name.replace(/\s/g , '_')
+            $('#generated').append($('<form id='+id+'>'));
+            $('#'+id).attr({action: '/', method: 'POST'})
+            $('#'+id).append('<h1>'+toGenerate.name+'</h1>')
             toGenerate.questions.forEach(function(question){
-              $('#generated').append('<h3>'+question.questionName+'</h3>')
+              $('#'+id).append('<h3>'+question.questionName+'</h3>')
               question.answers.forEach(function(answer) {
                 var input = '<label><input name="'+question.questionName+'" type="'+question.fieldType+'">'+answer+'</label>';
-                $('#generated').append($(input))
+                $('#'+id).append($(input));
                 });
               });
+              var submit = '<input type = "submit"/>'
+              $('#'+id).append(submit);
+              $('#nameField').val('').focus();
+              surveyToGenerate = {};
+              surveyToGenerate.questions = [];
           }
