@@ -76,16 +76,21 @@ var findQuestionFromSurvey = function(db, response) {
 
 //beta aggregation function
 function aggregateAnswers(db, response) {
-  questionsArray.forEach(function(question) {
+  var obj = {};
+  for (var prop in response) {
+    if(prop != 'surveyName', prop != '_id')
+      obj[prop] = response[prop]
+  }
+  for (var question in obj) {
      db.collection('answers').aggregate(
         [
-          {$match: {$and: [{'surveyName': response.surveyName}, {'tak czy nie': 'nie'}, {'p': 'an'}]}},
-          {$group: {"_id": question.questionName, "count": {$sum: 1}}}
+          {$match: {$and: [{'surveyName': response.surveyName}, obj]}},
+          {$group: {"_id": obj[question], "count": {$sum: 1}}}
         ]).toArray(function(err, result) {
           assert.equal(err, null);
           console.log(result);
         });
-  });
+  }
 }
 
 //finding surveys to pas to generate function
