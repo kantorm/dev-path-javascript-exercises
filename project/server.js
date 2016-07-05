@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-var fs = require('fs');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
@@ -8,7 +7,7 @@ var pug = require('pug');
 
 var uri = "mongodb://localhost:27017/data";
 var surveysArray = [];
-var questionsArray = [];
+var results = {};
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -23,21 +22,21 @@ app.get(/\w*|\s/g, function (req, res) {
 });
 
 app.post('/', urlencodedParser, function (req, res) {
-  var response = req.body;
+
+  //Adding answers in database
   MongoClient.connect(uri, function(error, db) {
-  //saving answers in database
     if (error)
       return console.log(error);
-    db.collection('answers').insertOne(response, function(err, result) {
+
+    db.collection('answers').insertOne(req.body, function(err, result) {
       assert.equal(err, null);
       console.log('Inserted a document into the answers collection.');
-//aggregation
-       findQuestionFromSurvey(db, response);
-       aggregateAnswers(db, response);
 
-      res.render('index', {answers: response});
+      //aggregation
+       aggregateAnswers(db, req.body)
     })
   });
+  res.render('index', {answers: req.body, agregated: results});
 });
 
 app.post('/surveys' , urlencodedParser, function (req, res) {
@@ -45,40 +44,26 @@ app.post('/surveys' , urlencodedParser, function (req, res) {
   for (var element in req.body) {
     response.survey = element
   }
+
  //Adding survey into databse
   MongoClient.connect(uri, function(error, db) {
     if (error)
       return console.log(error);
+
     db.collection('surveys').insertOne(response, function(err, result) {
       assert.equal(err, null);
       console.log('Inserted a document into the surveys collection.');
     });
   });
-
 });
 
 //queries to database
-//fiding questions for aggregation
-var findQuestionFromSurvey = function(db, response) {
-  var array = [];
-  var cursor = db.collection('surveys').find()
-    cursor.each(function(err, doc) {
-      assert.equal(err, null);
-      if (doc != null) {
-        doc = JSON.parse(doc.survey)
-        if (doc.name == response.surveyName)
-          array = doc.questions;
-    } else {
-      questionsArray = array;
-    }
-  });
-};
 
-//beta aggregation function
+//beta2.0 aggregation function
 function aggregateAnswers(db, response) {
   var obj = {};
   for (var prop in response) {
-    if(prop != 'surveyName', prop != '_id')
+    if(prop != 'surveyName' && prop != '_id')
       obj[prop] = response[prop]
   }
   for (var question in obj) {
@@ -87,8 +72,9 @@ function aggregateAnswers(db, response) {
           {$match: {$and: [{'surveyName': response.surveyName}, obj]}},
           {$group: {"_id": obj[question], "count": {$sum: 1}}}
         ]).toArray(function(err, result) {
-          assert.equal(err, null);
-          console.log(result);
+
+            assert.equal(err, null);
+            console.log(result);
         });
   }
 }
