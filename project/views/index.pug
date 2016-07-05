@@ -23,4 +23,9 @@ html
           h3= 'Twoje odpowiedzi'
           ul
             each answer, question in answers
-              li= question + ': ' + answer
+              if question != '_id'
+                li= question + ': ' + answer
+      //- if agregated != 0
+      //-   div
+      //-     h3= 'Ilość takich samych odpowiedzi'
+      //-     p= agregated.count
