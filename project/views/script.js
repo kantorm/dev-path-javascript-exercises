@@ -2,13 +2,13 @@ let surveyToGenerate = new Object();
 surveyToGenerate.questions = [];
 
 let answers = [];
-$('#addAnswer').click(function() {
+$('#addAnswer').click( event => {
   let toAdd = $('#answerField').val();
   answers.push(toAdd);
   $('#answerField').val('').focus();
 });
 
-$('#addQuestion').click(function() {
+$('#addQuestion').click(event => {
   if (surveyToGenerate.name == undefined)
     surveyToGenerate.name = $('#nameField').val();
 
@@ -24,7 +24,7 @@ $('#addQuestion').click(function() {
   $('#answerField').val('');
 });
 
-$('#surveyFields').submit(function(event) {
+$('#surveyFields').submit(event => {
 
   let data = JSON.stringify(surveyToGenerate)
   $.post('/surveys', data)
