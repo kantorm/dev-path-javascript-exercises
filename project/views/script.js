@@ -59,11 +59,4 @@ function generateSurvey(toGenerate) {
   surveyToGenerate = {};
   surveyToGenerate.questions = [];
 }
-function generateFormStorage() {
-  for (var survey in sessionStorage) {
-    var parsed = JSON.parse(sessionStorage[survey]);
-    generateSurvey(parsed);
-  }
-}
-
 $(document).ready(generateFormStorage())
