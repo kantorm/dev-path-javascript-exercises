@@ -25,7 +25,5 @@ html
             each answer, question in answers
               if question != '_id'
                 li= question + ': ' + answer
-      //- if agregated != 0
-      //-   div
-      //-     h3= 'Ilość takich samych odpowiedzi'
-      //-     p= agregated.count
+          -var percent = Math.round((givenAnswersCount/allAnswersCount)*100)
+          p= 'Takiej samej odpowiedzi udzielono '+givenAnswersCount+' razy. Jest to '+percent+'% wszystkich odpowiedzi'

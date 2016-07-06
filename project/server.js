@@ -7,7 +7,8 @@ var pug = require('pug');
 
 var uri = "mongodb://localhost:27017/data";
 var surveysArray = [];
-var results = {};
+var givenCount = 0;
+var allCount = 0;
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -34,9 +35,10 @@ app.post('/', urlencodedParser, function (req, res) {
 
       //aggregation
        aggregateAnswers(db, req.body)
+       allAnswers(db, req.body)
     })
   });
-  res.render('index', {answers: req.body, agregated: results});
+  res.render('index', {answers: req.body, allAnswersCount: allCount, givenAnswersCount: givenCount});
 });
 
 app.post('/surveys' , urlencodedParser, function (req, res) {
@@ -74,11 +76,20 @@ function aggregateAnswers(db, response) {
         ]).toArray(function(err, result) {
 
             assert.equal(err, null);
-            console.log(result);
+            givenCount = result[0].count;
         });
   }
 }
-
+function allAnswers(db, response) {
+  db.collection('answers').aggregate(
+    [
+      {$match: {'surveyName': response.surveyName}},
+      {$group: {'_id': response.surveyName, 'count': {$sum: 1}}}
+    ]).toArray(function(err, result) {
+        assert.equal(err, null);
+        allCount = result[0].count;
+    })
+}
 //finding surveys to pas to generate function
 var findSurveys = function(db) {
   var array = [];
