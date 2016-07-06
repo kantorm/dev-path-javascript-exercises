@@ -20,9 +20,11 @@ html
         include script.js
       script.
         surveysArray = !{JSON.stringify(surveys)}
+        console.log(surveysArray)
         surveysArray.forEach(function(survey) {
           survey = JSON.parse(survey.survey)
-          generateSurvey(survey)
+          if (survey.name)
+            generateSurvey(survey)
         });
       if answers != 0
         div

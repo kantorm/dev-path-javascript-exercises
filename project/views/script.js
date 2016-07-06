@@ -59,4 +59,3 @@ function generateSurvey(toGenerate) {
   surveyToGenerate = {};
   surveyToGenerate.questions = [];
 }
-$(document).ready(generateFormStorage())
