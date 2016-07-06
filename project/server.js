@@ -57,6 +57,7 @@ app.post('/surveys' , urlencodedParser, function (req, res) {
       assert.equal(err, null);
       console.log('Inserted a document into the surveys collection.');
     });
+    findSurveys(db);
   });
 });
 
