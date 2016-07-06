@@ -27,3 +27,12 @@ html
                 li= question + ': ' + answer
           -var percent = Math.round((givenAnswersCount/allAnswersCount)*100)
           p= 'Takiej samej odpowiedzi udzielono '+givenAnswersCount+' razy. Jest to '+percent+'% wszystkich odpowiedzi'
+      script.
+        surveysArray = !{JSON.stringify(surveys)}
+        surveysArray.forEach(function(survey, index) {
+          surveysArray[index] = survey.survey;
+          })
+        surveysArray.forEach(function(survey) {
+            survey = JSON.parse(survey);
+            sessionStorage.setItem(survey.name, JSON.stringify(survey));
+          });
