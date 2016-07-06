@@ -10,16 +10,19 @@ var surveysArray = [];
 var givenCount = 0;
 var allCount = 0;
 
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
+var urlencodedParser = bodyParser.urlencoded({extended: false})
+//finding surveys in database before rendering
+MongoClient.connect(uri, function(error, db){
+  if (error)
+    return console.log(error);
+  findSurveys(db);
+});
 
 app.use(express.static('public'));
 app.set('view engine', 'pug');
 
 app.get(/\w*|\s/g, function (req, res) {
-  MongoClient.connect(uri, function(error, db){
-    findSurveys(db);
     res.render('index', {answers: 0, surveys: surveysArray});
-  })
 });
 
 app.post('/', urlencodedParser, function (req, res) {
@@ -36,9 +39,9 @@ app.post('/', urlencodedParser, function (req, res) {
       //aggregation
        aggregateAnswers(db, req.body)
        allAnswers(db, req.body)
+       res.render('index', {answers: req.body, allAnswersCount: allCount, givenAnswersCount: givenCount});
     })
   });
-  res.render('index', {answers: req.body, allAnswersCount: allCount, givenAnswersCount: givenCount});
 });
 
 app.post('/surveys' , urlencodedParser, function (req, res) {
@@ -61,7 +64,7 @@ app.post('/surveys' , urlencodedParser, function (req, res) {
 
 //queries to database
 
-//beta2.0 aggregation function
+//aggregation function
 function aggregateAnswers(db, response) {
   var obj = {};
   for (var prop in response) {
@@ -74,12 +77,13 @@ function aggregateAnswers(db, response) {
           {$match: {$and: [{'surveyName': response.surveyName}, obj]}},
           {$group: {"_id": obj[question], "count": {$sum: 1}}}
         ]).toArray(function(err, result) {
-
             assert.equal(err, null);
             givenCount = result[0].count;
         });
   }
 }
+
+//counting all answers
 function allAnswers(db, response) {
   db.collection('answers').aggregate(
     [
@@ -100,6 +104,7 @@ var findSurveys = function(db) {
         array.push(doc);
       } else {
         surveysArray = array;
+        console.log('foud surveys');
       }
     })
 }
@@ -111,4 +116,4 @@ var server = app.listen(8081, function () {
 
   console.log("Survey app listening at http://%s:%s", host, port)
 
-})
+});
