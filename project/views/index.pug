@@ -21,11 +21,11 @@ html
       script.
         surveysArray = !{JSON.stringify(surveys)}
         console.log(surveysArray)
-        surveysArray.forEach(function(survey) {
+        for (let survey of surveysArray) {
           survey = JSON.parse(survey.survey)
           if (survey.name)
             generateSurvey(survey)
-        });
+        }
       if answers != 0
         div
           h3= 'Twoje odpowiedzi'
