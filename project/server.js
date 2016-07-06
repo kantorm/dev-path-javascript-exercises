@@ -37,9 +37,7 @@ app.post('/', urlencodedParser, function (req, res) {
       console.log('Inserted a document into the answers collection.');
 
       //aggregation
-       aggregateAnswers(db, req.body)
-       allAnswers(db, req.body)
-       res.render('index', {answers: req.body, allAnswersCount: allCount, givenAnswersCount: givenCount});
+       aggregateAnswers(db, req.body, res)
     })
   });
 });
@@ -65,8 +63,9 @@ app.post('/surveys' , urlencodedParser, function (req, res) {
 //queries to database
 
 //aggregation function
-function aggregateAnswers(db, response) {
+function aggregateAnswers(db, response, resp) {
   var obj = {};
+  var flag = true;
   for (var prop in response) {
     if(prop != 'surveyName' && prop != '_id')
       obj[prop] = response[prop]
@@ -79,12 +78,16 @@ function aggregateAnswers(db, response) {
         ]).toArray(function(err, result) {
             assert.equal(err, null);
             givenCount = result[0].count;
+            if (flag) {
+              allAnswers(db, response, resp)
+              flag = false
+            }
         });
   }
 }
 
 //counting all answers
-function allAnswers(db, response) {
+function allAnswers(db, response, resp) {
   db.collection('answers').aggregate(
     [
       {$match: {'surveyName': response.surveyName}},
@@ -92,6 +95,8 @@ function allAnswers(db, response) {
     ]).toArray(function(err, result) {
         assert.equal(err, null);
         allCount = result[0].count;
+        resp.render('index', {answers: response, allAnswersCount: allCount,
+                     givenAnswersCount: givenCount, surveys: surveysArray})
     })
 }
 //finding surveys to pas to generate function
