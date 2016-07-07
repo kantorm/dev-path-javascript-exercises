@@ -7,8 +7,10 @@ var pug = require('pug');
 
 var uri = "mongodb://localhost:27017/data";
 var surveysArray = [];
+var questionsArray = []
 var givenCount = 0;
 var allCount = 0;
+var toHighChart = []
 
 var urlencodedParser = bodyParser.urlencoded({extended: false})
 //finding surveys in database before rendering
@@ -35,7 +37,7 @@ app.post('/', urlencodedParser, function (req, res) {
     db.collection('answers').insertOne(req.body, function(err, result) {
       assert.equal(err, null);
       console.log('Inserted a document into the answers collection.');
-
+      findQuestions(db, req.body)
       //aggregation
        aggregateAnswers(db, req.body, res)
     })
@@ -97,11 +99,11 @@ function allAnswers(db, response, resp) {
         assert.equal(err, null);
         allCount = result[0].count;
         resp.render('index', {answers: response, allAnswersCount: allCount,
-                     givenAnswersCount: givenCount, surveys: surveysArray})
+                     givenAnswersCount: givenCount, surveys: surveysArray, toHighChart: toHighChart})
     })
 }
 //finding surveys to pas to generate function
-var findSurveys = function(db) {
+function findSurveys(db) {
   var array = [];
   var cursor = db.collection('surveys').find();
     cursor.each(function(err, doc) {
@@ -113,6 +115,45 @@ var findSurveys = function(db) {
         console.log('foud surveys');
       }
     })
+}
+// building questions array
+function findQuestions(db, response) {
+  var cursor = db.collection('surveys').find();
+    cursor.each(function(err, doc) {
+      assert.equal(err, null);
+      if (doc != null && JSON.parse(doc.survey).name == response.surveyName) {
+        questionsArray = (JSON.parse(doc.survey).questions);
+        answersCount(db, response);
+        toHighChart=[]
+      }
+    })
+}
+//counting answers for each asnwer option for ech question in survey
+function answersCount(db, response) {
+  questionsArray.forEach(function(question) {
+    var toChartObj = {};
+    var countersArray = [];
+
+    toChartObj['questionName'] = question.questionName;
+    toChartObj['answerOptions'] = question.answers;
+    toChartObj['answers'] = [];
+
+    question.answers.forEach (function(answerOption) {
+      var matcher = {};
+      matcher[question.questionName+'\r\n                '] = answerOption
+      db.collection('answers').aggregate(
+        [
+            {$match: {$and: [{'surveyName': response.surveyName}, matcher]}},
+            {$group: {'_id': answerOption, 'count': {$sum: 1}}}
+        ]).toArray(function(err, result) {
+            assert.equal(err, null)
+            toChartObj.answers.push(result[0].count);
+            if (toChartObj.answers.length == toChartObj.answerOptions.length) {
+              toHighChart.push(toChartObj);
+            }
+        });
+    });
+  })
 }
 
 var server = app.listen(8081, function () {
