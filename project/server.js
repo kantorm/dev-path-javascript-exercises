@@ -24,7 +24,7 @@ app.use(express.static('public'));
 app.set('view engine', 'pug');
 
 app.get(/\w*|\s/g, function (req, res) {
-    res.render('index', {answers: 0, surveys: surveysArray});
+    res.render('index', {answers: 0, surveys: surveysArray, toHighChart: 0});
 });
 
 app.post('/', urlencodedParser, function (req, res) {
