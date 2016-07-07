@@ -2,6 +2,7 @@ doctype html
 html
   head
     script(src= 'https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js')
+    script(src= 'http://code.highcharts.com/highcharts.js')
   body
       div
         form#surveyFields
@@ -20,7 +21,6 @@ html
         include script.js
       script.
         surveysArray = !{JSON.stringify(surveys)}
-        console.log(surveysArray)
         for (let survey of surveysArray) {
           survey = JSON.parse(survey.survey)
           if (survey.name)
@@ -35,3 +35,31 @@ html
                 li= question + ': ' + answer
           -var percent = Math.round((givenAnswersCount/allAnswersCount)*100)
           p= 'Takiej samej odpowiedzi udzielono '+givenAnswersCount+' razy. Jest to '+percent+'% wszystkich odpowiedzi'
+        div#charts
+          script.
+            toHighChart = !{JSON.stringify(toHighChart)}
+            for (let pattern of toHighChart) {
+              $(function() {
+                $('#charts').append(`<div id=${pattern.questionName.replace(/\s/g, '-')}>`)
+                $(`#${pattern.questionName.replace (/\s/g,'-')}`).highcharts({
+                  chart: {
+                    type: 'bar'
+                  },
+                  title: {
+                    text: pattern.questionName
+                  },
+                  xAxis: {
+                    categories: pattern.answerOptions
+                  },
+                  yAxis: {
+                    title: {
+                      text: 'answers'
+                    }
+                  },
+                  series: [{
+                    name: 'Answers amount',
+                    data: pattern.answers
+                  }]
+                })
+              })
+            }
