@@ -19,6 +19,7 @@ html
       script
         include script.js
       div#generated
+      if toHighChart.length != 0
       div#charts
         script.
           toHighChart = !{JSON.stringify(toHighChart)}

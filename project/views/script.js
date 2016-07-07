@@ -90,5 +90,5 @@ function generateHighChart(pattern) {
       name: 'Answers amount',
       data: pattern.answers
     }]
-  })
+  });
 }
