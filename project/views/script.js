@@ -34,9 +34,9 @@ $('#surveyFields').submit(event => {
 });
 
 function generateSurvey(toGenerate) {
-
+  $('#generated').append(`<div id=${toGenerate.name.replace(/\s/g , '-')}>`)
   let formId = toGenerate.name.replace(/\s/g , '_');
-  $('#generated').append($('<form id='+formId+'>'));
+  $(`#${toGenerate.name.replace(/\s/g , '-')}`).append($(`<form id=${formId}>`));
   formId = '#'+formId;
   $(formId).attr({action: '/', method: 'POST'});
   $(formId).append(`<h1>${toGenerate.name}</h1>`);
@@ -58,4 +58,37 @@ function generateSurvey(toGenerate) {
 
   surveyToGenerate = {};
   surveyToGenerate.questions = [];
+
+}
+//highcharts
+function generateHighChart(pattern) {
+  $(`#${pattern.questionName.replace (/\s/g,'-')}`).highcharts({
+    chart: {
+      type: 'bar'
+    },
+    title: {
+      text: pattern.questionName
+    },
+    xAxis: {
+      categories: pattern.answerOptions
+    },
+    yAxis: {
+      title: {
+        text: 'Answers',
+        align: 'high'
+      }
+    },
+    plotOptions: {
+            bar: {
+                dataLabels: {
+                    enabled: true
+                },
+            colorByPoint: true
+            }
+        },
+    series: [{
+      name: 'Answers amount',
+      data: pattern.answers
+    }]
+  })
 }

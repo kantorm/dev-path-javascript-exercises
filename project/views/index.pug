@@ -16,9 +16,16 @@ html
             input#addAnswer(type= 'button', value= 'Add answer')
             input#addQuestion(type= 'button', value= 'Add question')
             input#generate(type= 'submit', value= 'GENERATE')
-      div#generated
       script
         include script.js
+      div#generated
+      div#charts
+        script.
+          toHighChart = !{JSON.stringify(toHighChart)}
+          for (let pattern of toHighChart) {
+            $('#charts').append(`<div id=${pattern.questionName.replace(/\s/g, '-')}>`)
+            generateHighChart(pattern)
+          }
       script.
         surveysArray = !{JSON.stringify(surveys)}
         for (let survey of surveysArray) {
@@ -35,31 +42,3 @@ html
                 li= question + ': ' + answer
           -var percent = Math.round((givenAnswersCount/allAnswersCount)*100)
           p= 'Takiej samej odpowiedzi udzielono '+givenAnswersCount+' razy. Jest to '+percent+'% wszystkich odpowiedzi'
-        div#charts
-          script.
-            toHighChart = !{JSON.stringify(toHighChart)}
-            for (let pattern of toHighChart) {
-              $(function() {
-                $('#charts').append(`<div id=${pattern.questionName.replace(/\s/g, '-')}>`)
-                $(`#${pattern.questionName.replace (/\s/g,'-')}`).highcharts({
-                  chart: {
-                    type: 'bar'
-                  },
-                  title: {
-                    text: pattern.questionName
-                  },
-                  xAxis: {
-                    categories: pattern.answerOptions
-                  },
-                  yAxis: {
-                    title: {
-                      text: 'answers'
-                    }
-                  },
-                  series: [{
-                    name: 'Answers amount',
-                    data: pattern.answers
-                  }]
-                })
-              })
-            }
