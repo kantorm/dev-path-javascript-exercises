@@ -38,7 +38,7 @@ function generateSurvey(toGenerate) {
   let formId = toGenerate.name.replace(/\s/g , '_');
   $(`#generated`).append($(`<form id=${formId}>`));
   formId = '#'+formId;
-  $(formId).attr({action: '/', method: 'POST'});
+  $(formId).attr({action: `/surveys/${toGenerate.name.replace(/ /g,'-')}/results`, method: 'POST'});
   $(formId).append(`<h1>${toGenerate.name}</h1>`);
   $(formId).append(`<input style="display: none" value="${toGenerate.name}" name="surveyName">`)
 

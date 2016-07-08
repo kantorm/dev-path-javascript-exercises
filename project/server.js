@@ -41,8 +41,7 @@ app.get('/surveys/:surveyName', function(req, res) {
   res.render('index', {answers: [], toHighChart: [], textAnswersArray: [], textQuestions: [], surveys: toGenerate})
 })
 
-app.post('/', urlencodedParser, function (req, res) {
-
+app.post('/surveys/:surveyName/results', urlencodedParser, function (req, res) {
   //Adding answers in database
   MongoClient.connect(uri, function(error, db) {
     if (error)
@@ -113,7 +112,7 @@ function allAnswers(db, response, resp) {
         assert.equal(err, null);
         allCount = result[0].count;
         resp.render('index', {answers: response, allAnswersCount: allCount,
-                     givenAnswersCount: givenCount, surveys: surveysArray, toHighChart: toHighChart,
+                     givenAnswersCount: givenCount, surveys: [], toHighChart: toHighChart,
                       textQuestions: textQuestions, textAnswersArray: textAnswersArray})
     })
 }
