@@ -4,7 +4,7 @@ html
     script(src= 'https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js')
     script(src= 'http://code.highcharts.com/highcharts.js')
   body
-      div
+      div#container
         form#surveyFields
             input#nameField(name= 'surveyName', placeholder= 'Name')
             input#questionField(name= 'question', placeholder= 'Question')
@@ -16,6 +16,13 @@ html
             input#addAnswer(type= 'button', value= 'Add answer')
             input#addQuestion(type= 'button', value= 'Add question')
             input#generate(type= 'submit', value= 'GENERATE')
+        //- div#links
+        //-     script.
+        //-         surveysArray = !{JSON.stringify(surveys)}
+        //-         for (let survey of surveysArray) {
+        //-           survey = JSON.parse(survey.survey)
+        //-           $('#links').append(`<a href=/surveys/${survey.name.replace(/\s/g, '-')}> ${survey.name}</a>`)
+        //-           }
       script
         include script.js
       div#generated
