@@ -25,9 +25,21 @@ MongoClient.connect(uri, function(error, db){
 app.use(express.static('public'));
 app.set('view engine', 'pug');
 
-app.get(/\w*|\s/g, function (req, res) {
-    res.render('index', {answers: 0, surveys: surveysArray, toHighChart: [], textAnswersArray: [], textQuestions: []});
+app.get('/', function (req, res) {
+    res.render('index', {answers: [], surveys: surveysArray, toHighChart: [], textAnswersArray: [], textQuestions: []});
 });
+//route for each created survey
+app.get('/surveys/:surveyName', function(req, res) {
+  var surveyName = req.params['surveyName'].replace(/-|_/g, ' ')
+  var toGenerate = []
+
+  surveysArray.forEach(function(survey) {
+    if (JSON.parse(survey.survey).name == surveyName) {
+      toGenerate.push(survey);
+    }
+  })
+  res.render('index', {answers: [], toHighChart: [], textAnswersArray: [], textQuestions: [], surveys: toGenerate})
+})
 
 app.post('/', urlencodedParser, function (req, res) {
 
