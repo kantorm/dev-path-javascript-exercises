@@ -43,3 +43,9 @@ html
                 li= question + ': ' + answer
           -var percent = Math.round((givenAnswersCount/allAnswersCount)*100)
           p= 'Takiej samej odpowiedzi udzielono '+givenAnswersCount+' razy. Jest to '+percent+'% wszystkich odpowiedzi'
+        div#listing
+          script.
+            textQuestions = !{JSON.stringify(textQuestions)}
+            textAnswersArray = !{JSON.stringify(textAnswersArray)}
+
+            listingAnswers(textQuestions, textAnswersArray)

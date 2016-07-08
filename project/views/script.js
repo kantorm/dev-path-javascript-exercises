@@ -34,9 +34,9 @@ $('#surveyFields').submit(event => {
 });
 
 function generateSurvey(toGenerate) {
-  $('#generated').append(`<div id=${toGenerate.name.replace(/\s/g , '-')}>`)
+
   let formId = toGenerate.name.replace(/\s/g , '_');
-  $(`#${toGenerate.name.replace(/\s/g , '-')}`).append($(`<form id=${formId}>`));
+  $(`#generated`).append($(`<form id=${formId}>`));
   formId = '#'+formId;
   $(formId).attr({action: '/', method: 'POST'});
   $(formId).append(`<h1>${toGenerate.name}</h1>`);
@@ -91,4 +91,14 @@ function generateHighChart(pattern) {
       data: pattern.answers
     }]
   });
+}
+//listing text answers
+function listingAnswers(textQuestions, textAnswersArray) {
+  for (question of textQuestions) {
+    $('#listing').append(`<ul id=${question.replace(/\s/g, '-')}>`)
+    for (answer of textAnswersArray) {
+      $(`#${question.replace(/\s/g, '-')}`).append(`<li> ${answer[question]}</li>`)
+      console.log(answer)
+      }
+    }
 }
