@@ -58,14 +58,17 @@ var SurveyForm = React.createClass({
       questionName:'',
     })
   },
-  saveSurvey: function() {
+  saveSurvey: function(event) {
+    event.preventDefault();
+
+    $.post('/surveys', this.survey)
     this.survey = {questions: [], surveyName: ''}
 
   },
   render: function() {
     return(
       <div>
-        <form>
+        <form onSubmit={this.saveSurvey}>
           <input name='surveyName' placeholder='Name' value={this.state.surveyName} onChange={this.saveSurveyName}/>
           <input name='questionName' placeholder='Question' value={this.state.questionName} onChange={this.saveQuestionName}/>
           <select name='fieldType' onChange={this.fieldTypeChange}>
@@ -77,7 +80,7 @@ var SurveyForm = React.createClass({
           <input name='answerOption' placeholder='Answer option' value={this.state.answerOption} onChange={this.saveAnswerOption}/>
           <input type='button' value='Add answer' onClick={this.addAnswer}/>
           <input type='button' value='Add question' onClick={this.addQuestion}/>
-          <input type='button' value='Save' onClick={this.saveSurvey}/>
+          <input type='submit' value='Save'/>
         </form>
         <GeneratedSurveys survey={this.survey}/>
       </div>
@@ -95,7 +98,12 @@ var GeneratedSurveys = React.createClass({
           return <label key={answerOption}><input type={question.fieldType} value={answerOption} name={question.questionName} />{answerOption}</label>
         })
     });
-
+    var submitButton;
+    if (this.props.survey.surveyName) {
+      submitButton = <input type='submit' value='Send Answers' name={this.props.survey.surveyName}/>
+    } else {
+      submitButton=''
+    }
     return(
       <div>
         <form key={this.props.survey.surveyName}>
@@ -104,7 +112,7 @@ var GeneratedSurveys = React.createClass({
             return <div><h3 key={question.questionName}>{question.questionName}</h3>{answers[index]}</div>
             })
           }
-         <input type='submit' value='Send Answers'/>
+          {submitButton}
         </form>
     </div>);
   }
