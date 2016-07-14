@@ -75,12 +75,12 @@ var SurveyForm = React.createClass({
             <option value=''>Answer type</option>
             <option value='radio'>radio</option>
             <option value='checkbox'>checkbox</option>
-            <option value='input'>input</option>
+            <option value='text'>input</option>
           </select>
           <input name='answerOption' placeholder='Answer option' value={this.state.answerOption} onChange={this.saveAnswerOption}/>
           <input type='button' value='Add answer' onClick={this.addAnswer}/>
           <input type='button' value='Add question' onClick={this.addQuestion}/>
-          <input type='submit' value='Save'/>
+          <input type='submit' value='Save Survey'/>
         </form>
         <GeneratedSurveys survey={this.survey}/>
       </div>
@@ -94,7 +94,7 @@ var GeneratedSurveys = React.createClass({
   render: function() {
     var answers = this.props.survey.questions.map(function(question) {
         return  question.answers.map(function(answerOption) {
-          return <label key={answerOption}><input type={question.fieldType} value={answerOption} name={question.questionName} />{answerOption}</label>
+          return <label key={answerOption}><input name={question.questionName} type={question.fieldType} value={answerOption} />{answerOption}</label>
         })
     });
     var submitButton;

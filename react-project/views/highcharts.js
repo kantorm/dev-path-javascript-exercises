@@ -29,3 +29,13 @@ function generateHighChart(pattern) {
     }]
   });
 }
+//listing text answers
+function listingAnswers(textQuestions, textAnswersArray) {
+  for (question of textQuestions) {
+    $('#listing').append(`<ul id=${question.replace(/\s/g, '-')}>`)
+    for (answer of textAnswersArray) {
+      $(`#${question.replace(/\s/g, '-')}`).append(`<li> ${answer[question]}</li>`)
+      console.log(answer)
+      }
+    }
+}
