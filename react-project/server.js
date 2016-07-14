@@ -26,7 +26,7 @@ app.use(express.static('public'));
 app.set('view engine', 'pug');
 
 app.get('/', function(req, res) {
-  res.render('index', {surveys: surveysArray})
+  res.render('index', {answers: [], surveys: surveysArray, toHighChart: [], textAnswersArray: [], textQuestions: []});
 });
 
 //rendering specified survey that is sarleady stored in db
@@ -41,6 +41,7 @@ app.get('/surveys/:surveyName', function(req, res) {
   })
   res.render('index', {answers: [], toHighChart: [], textAnswersArray: [], textQuestions: [], surveys: toGenerate})
 });
+
 //saving surveys in database
 app.post('/surveys', urlencodedParser, function(req, res) {
   MongoClient.connect(uri, function(error, db) {
@@ -51,6 +52,7 @@ app.post('/surveys', urlencodedParser, function(req, res) {
       assert.equal(err, null);
       console.log('Inserted a document into the surveys collection.');
     });
+    findSurveys(db)
   });
 })
 
@@ -104,7 +106,6 @@ function allAnswers(db, response, resp) {
     ]).toArray(function(err, result) {
         assert.equal(err, null);
         allCount = result[0].count;
-        console.log(response);
         resp.render('index', {answers: response, allAnswersCount: allCount,
                      givenAnswersCount: givenCount, surveys: [], toHighChart: toHighChart,
                       textQuestions: textQuestions, textAnswersArray: textAnswersArray})
