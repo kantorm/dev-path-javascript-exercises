@@ -3,8 +3,16 @@ var app = express();
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
+var pug = require('pug');
 
-var uri = "mongodb://localhost:27017/data";
+var uri = "mongodb://localhost:12345/data";
+var surveysArray = [];
+var questionsArray = []
+var givenCount = 0;
+var allCount = 0;
+var toHighChart = [];
+var textQuestions = [];
+var textAnswersArray = [];
 
 var urlencodedParser = bodyParser.urlencoded({extended: true})
 //finding surveys in database before rendering
@@ -15,12 +23,10 @@ MongoClient.connect(uri, function(error, db){
 });
 
 app.use(express.static('public'));
-app.use(bodyParser.json());
+app.set('view engine', 'pug');
 
 app.get('/', function(req, res) {
-  console.log('get is on fire');
-  //res.send("index")
-
+  res.render('index', {surveys: surveysArray})
 });
 
 app.post('/surveys', urlencodedParser, function(req, res) {
@@ -34,6 +40,24 @@ app.post('/surveys', urlencodedParser, function(req, res) {
     });
   });
 })
+
+app.post('/surveys/:surveyName/results', urlencodedParser, function (req, res) {
+  //Adding answers in database
+  console.log(req.body);
+  MongoClient.connect(uri, function(error, db) {
+    if (error)
+      return console.log(error);
+
+    db.collection('answers').insertOne(req.body, function(err, result) {
+      assert.equal(err, null);
+      console.log('Inserted a document into the answers collection.');
+      // findQuestions(db, req.body)
+      // //aggregation
+      //  aggregateAnswers(db, req.body, res)
+    })
+  });
+});
+
 //database queries
 //finding surveys to pas to generate function
 function findSurveys(db) {
@@ -51,7 +75,7 @@ function findSurveys(db) {
 }
 
 
-var server = app.listen(8081, function () {
+var server = app.listen(8080, function () {
 
   var host = server.address().address
   var port = server.address().port
