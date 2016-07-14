@@ -13,7 +13,22 @@ html
       div#from-database
       script(type='text/babel')
         include generateFromDb.jsx
+      div#charts
+      script
+          include highcharts.js
       script.
           surveysArray = !{JSON.stringify(surveys)}
-          /*console.log(surveysArray)*/
-          //showSurveys(surveysArray)
+          toHighChart = !{JSON.stringify(toHighChart)}
+          for (let pattern of toHighChart) {
+            $('#charts').append(`<div id=${pattern.questionName.replace(/\s/g, '-')}>`)
+            generateHighChart(pattern)
+          }
+      if answers != 0
+        div
+          h3= 'Twoje odpowiedzi'
+          ul
+            each answer, question in answers
+              if question != '_id' && question != 'surveyName'
+                li= question + ': ' + answer
+                -var percent = Math.round((givenAnswersCount/allAnswersCount)*100)
+          p= 'Takiej samej odpowiedzi udzielono '+givenAnswersCount+' razy. Jest to '+percent+'% wszystkich odpowiedzi'
