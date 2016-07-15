@@ -8,8 +8,11 @@ var GenerateFromDb = React.createClass({
                     <h1>{survey.surveyName}</h1> {survey.questions.map(function(question){
             return    <div key={survey._id+question.questionName}>
                         <h3>{question.questionName}</h3> {question.answers.map(function(answerOption){
-              return      <label key={survey._id+answerOption}><input name={question.questionName} type={question.fieldType} value={answerOption} />
-                  {answerOption}</label>
+              if (question.fieldType != 'text')
+                return      <label key={survey._id+answerOption}><input name={question.questionName}
+                                  type={question.fieldType} value={answerOption} />{answerOption}</label>
+              else
+                  return <label key={survey._id+answerOption}><input name={question.questionName}/>{answerOption}</label>
             })}</div>
         })}<input defaultValue={survey.surveyName} name='surveyName' style={{display: 'none'}}/>
         <input type='submit' value='Send Answers'/></form>
