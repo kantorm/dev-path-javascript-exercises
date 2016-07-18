@@ -1,41 +1,34 @@
-var SurveysBox = React.createClass({
-  render: function() {
-    return(
-        <SurveyForm/>
-    );
-  }
-});
+class SurveyForm extends React.Component {
+    survey: {questions: [], surveyName: ''}
+    answers: []
+    fieldType: ''
 
-var SurveyForm = React.createClass({
-  survey: {questions: [], surveyName: ''},
-  answers: [],
-  fieldType: '',
-
-  saveSurveyName: function(name) {
+  saveSurveyName(name) {
     this.survey.surveyName = name
-  },
-  saveFieldType: function(type) {
+  }
+  saveFieldType(type) {
     this.fieldType = type
-  },
-  saveQuestionName: function(question) {
-
-  },
-  addAnswer: function(answerOption) {
+  }
+  addAnswer(answerOption) {
     this.answers.push(answerOption)
-  },
-  addQuestion: function(questionName) {
+  }
+  addQuestion(questionName) {
+    if(this.fieldType == '')
+      this.fieldType = 'radio'
     this.survey.questions.push({
       questionName: questionName,
       answers: this.answers,
       fieldType: this.fieldType
     })
-  },
-  saveSurvey: function(event) {
+    this.answers = []
+  }
+  saveSurvey(event) {
     event.preventDefault();
     $.post('/surveys', this.survey)
+    surveysArray.unshift(this.survey)
     this.survey = {questions: [], surveyName: ''}
-  },
-  render: function() {
+  }
+  render() {
     return(
       <div>
         <form onSubmit={this.saveSurvey}>
@@ -45,133 +38,111 @@ var SurveyForm = React.createClass({
           <AnswerOption addAnswer={this.addAnswer}/>
           <SaveButton/>
         </form>
-        <GeneratedSurveys survey={this.survey}/>
       </div>
     )
   }
-})
+}
 
-var SurveyName = React.createClass({
-  saveSurveyName: function(event) {
+class SurveyName extends React.Component {
+  saveSurveyName(event) {
     this.props.saveSurveyName(event.target.value)
-  },
-  render: function() {
+  }
+  render() {
     return(
         <input name='surveyName' placeholder='Name'
-                  onChange={this.saveSurveyName}/>
+                  onChange={this.saveSurveyName.bind(this)}/>
     )
   }
-})
+}
 
-var Questions= React.createClass({
-  getInitialState: function() {
-    return{
+class Questions extends React.Component {
+  constructor() {
+  super() ;
+    this.state = {
       questionName: ''
     }
-  },
-  saveQuestionName: function(event) {
+  }
+  saveQuestionName(event) {
     this.setState({
       questionName: event.target.value
     })
-  },
-  addQuestion: function() {
+  }
+  addQuestion() {
     this.props.addQuestion(this.state.questionName)
     this.setState({
       questionName: ''
     })
-  },
-  render: function() {
+  }
+  render() {
     return(
       <div style={{display: 'inline'}}>
         <input name='questionName' placeholder='Question'
-            value={this.state.questionName}  onChange={this.saveQuestionName}/>
-        <input type='button' value='Add question' onClick={this.addQuestion}/>
+            value={this.state.questionName}  onChange={this.saveQuestionName.bind(this)}/>
+          <input type='button' value='Add question' onClick={this.addQuestion.bind(this)}/>
       </div>
     )
   }
-})
+}
 
-var FieldType = React.createClass({
-  saveFieldType: function(event) {
+class FieldType extends React.Component {
+  saveFieldType(event) {
     this.props.saveFieldType(event.target.value)
-  },
-  render: function() {
+  }
+  render() {
     return(
-      <select name='fieldType' onChange={this.saveFieldType}>
+      <select name='fieldType' onChange={this.saveFieldType.bind(this)}>
         <option value='radio'>radio</option>
         <option value='checkbox'>checkbox</option>
         <option value='text'>input</option>
       </select>
     )
   }
-})
+}
 
-var AnswerOption = React.createClass({
-  getInitialState: function() {
-    return{
-      answerOption: ''
-    }
-  },
-  saveAnswerOption: function(event) {
+class AnswerOption extends React.Component {
+  constructor() {
+    super();
+      this.state = {
+        answerOption: ''
+      };
+  }
+  saveAnswerOption(event) {
     this.setState({
       answerOption: event.target.value
     });
-  },
-  addAnswer: function() {
+  }
+  addAnswer() {
     this.props.addAnswer(this.state.answerOption)
     this.setState({
       answerOption:''
     })
-  },
-  render: function() {
+  }
+  render() {
     return(
       <div style={{display: 'inline'}}>
         <input name='answerOption' placeholder='Answer option'
-                    value={this.state.answerOption} onChange={this.saveAnswerOption}/>
-        <input type='button' value='Add answer' onClick={this.addAnswer}/>
+                    value={this.state.answerOption} onChange={this.saveAnswerOption.bind(this)}/>
+                  <input type='button' value='Add answer' onClick={this.addAnswer.bind(this)}/>
       </div>
     )
   }
-})
+}
 
-var SaveButton = React.createClass({
-  render: function() {
+class SaveButton extends React.Component{
+  render() {
     return(
         <input type='submit' value='Save Survey'/>
     )
   }
-})
+}
 
-var GeneratedSurveys = React.createClass({
-  render: function() {
-    var submitButton;
-    if (this.props.survey.surveyName) {
-      submitButton = <input type='submit' value='Send Answers'/>
-    } else {
-      submitButton=''
-    }
-
-    var action = `/surveys/${this.props.survey.surveyName.replace(/ /g,'-')}/results`;
-
+class SurveysBox extends React.Component {
+  render() {
     return(
-      <div>
-        <form action={action} method='POST' name={this.props.survey.surveyName} key={new Date()}>
-          <h1>{this.props.survey.surveyName}</h1>
-            {this.props.survey.questions.map(function(question){
-              return <div>
-                        <h3>{question.questionName}</h3> {question.answers.map(function(answerOption){
-                          if(question.fieldType == 'text')
-                            return <label><input name={question.questionName}/></label>
-                          else
-                            return <label><input name={question.questionName} type={question.fieldType} value={answerOptipn}/>{answerOptipn}</label>
-              })}</div>
-          })}<input defaultValue={this.props.survey.surveyName} name='surveyName' style={{display: 'none'}}/>
-        {submitButton}
-        </form>
-      </div>
-    )
+        <SurveyForm/>
+    );
   }
-})
+};
 ReactDOM.render( <SurveysBox/>,
   document.getElementById('content')
 )

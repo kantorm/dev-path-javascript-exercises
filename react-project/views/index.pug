@@ -9,7 +9,7 @@ html
     body
       div#content
       script(type='text/babel')
-        include react-script.jsx
+        include splited.jsx
       div#from-database
       script(type='text/babel')
         include generateFromDb.jsx
@@ -36,5 +36,4 @@ html
           script.
             textQuestions = !{JSON.stringify(textQuestions)}
             textAnswersArray = !{JSON.stringify(textAnswersArray)}
-
             listingAnswers(textQuestions, textAnswersArray)

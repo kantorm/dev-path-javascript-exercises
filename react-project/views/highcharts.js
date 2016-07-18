@@ -1,3 +1,4 @@
+//generating a chart
 function generateHighChart(pattern) {
   $(`#${pattern.questionName.replace (/\s/g,'-')}`).highcharts({
     chart: {
@@ -35,7 +36,7 @@ function listingAnswers(textQuestions, textAnswersArray) {
     $('#listing').append(`<ul id=${question.replace(/\s/g, '-')}>`)
     for (answer of textAnswersArray) {
       $(`#${question.replace(/\s/g, '-')}`).append(`<li> ${answer[question]}</li>`)
-      console.log(answer)
+
       }
     }
 }
