@@ -35,8 +35,8 @@ function listingAnswers(textQuestions, textAnswersArray) {
   for (question of textQuestions) {
     $('#listing').append(`<ul id=${question.replace(/\s/g, '-')}>`)
     for (answer of textAnswersArray) {
-      $(`#${question.replace(/\s/g, '-')}`).append(`<li> ${answer[question]}</li>`)
-
+      if(answer != null && answer.hasOwnProperty(question) && answer[question] != '')
+        $(`#${question.replace(/\s/g, '-')}`).append(`<li> ${answer[question]}</li>`)
       }
     }
 }

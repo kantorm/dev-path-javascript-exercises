@@ -7,9 +7,9 @@ html
     script(src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react-dom.js")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js")
     body
-      div#content
+      div#create-survey-form
       script(type='text/babel')
-        include splited.jsx
+        include splited-es5.jsx
       div#from-database
       script(type='text/babel')
         include generateFromDb.jsx
@@ -31,7 +31,7 @@ html
               if question != '_id' && question != 'surveyName'
                 li= question + ': ' + answer
                 -var percent = Math.round((givenAnswersCount/allAnswersCount)*100)
-        p= 'Takiej samej odpowiedzi udzielono '+givenAnswersCount+' razy. Jest to '+percent+'% wszystkich odpowiedzi'
+        p= 'Takiej samej odpowiedzi udzielono '+givenAnswersCount+' razy. To jest '+percent+'% wszystkich odpowiedzi'
         div#listing
           script.
             textQuestions = !{JSON.stringify(textQuestions)}
