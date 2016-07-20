@@ -1,18 +1,19 @@
 class SurveyForm extends React.Component {
-    survey: {questions: [], surveyName: ''}
-    answers: []
-    fieldType: ''
+  // class properties
+  survey = {questions: [], surveyName: ''}
+  answers = []
+  fieldType = ''
 
-  saveSurveyName(name) {
+  saveSurveyName = (name) => {
     this.survey.surveyName = name
   }
-  saveFieldType(type) {
+  saveFieldType = (type) => {
     this.fieldType = type
   }
-  addAnswer(answerOption) {
-    this.answers.push(answerOption)
+  addAnswer  = (answerOption) => {
+    this.answers.push(answerOption);
   }
-  addQuestion(questionName) {
+  addQuestion = (questionName) => {
     if(this.fieldType == '')
       this.fieldType = 'radio'
     this.survey.questions.push({
@@ -22,7 +23,7 @@ class SurveyForm extends React.Component {
     })
     this.answers = []
   }
-  saveSurvey(event) {
+  saveSurvey = (event) => {
     event.preventDefault();
     $.post('/surveys', this.survey)
     surveysArray.unshift(this.survey)
@@ -44,13 +45,13 @@ class SurveyForm extends React.Component {
 }
 
 class SurveyName extends React.Component {
-  saveSurveyName(event) {
-    this.props.saveSurveyName(event.target.value)
+  saveSurveyName = (event) => {
+  this.props.saveSurveyName(event.target.value)
   }
   render() {
     return(
         <input name='surveyName' placeholder='Name'
-                  onChange={this.saveSurveyName.bind(this)}/>
+                  onChange={this.saveSurveyName}/>
     )
   }
 }
@@ -62,12 +63,12 @@ class Questions extends React.Component {
       questionName: ''
     }
   }
-  saveQuestionName(event) {
+  saveQuestionName = (event) => {
     this.setState({
       questionName: event.target.value
     })
   }
-  addQuestion() {
+  addQuestion = () => {
     this.props.addQuestion(this.state.questionName)
     this.setState({
       questionName: ''
@@ -77,20 +78,20 @@ class Questions extends React.Component {
     return(
       <div style={{display: 'inline'}}>
         <input name='questionName' placeholder='Question'
-            value={this.state.questionName}  onChange={this.saveQuestionName.bind(this)}/>
-          <input type='button' value='Add question' onClick={this.addQuestion.bind(this)}/>
+            value={this.state.questionName}  onChange={this.saveQuestionName}/>
+          <input type='button' value='Add question' onClick={this.addQuestion}/>
       </div>
     )
   }
 }
 
 class FieldType extends React.Component {
-  saveFieldType(event) {
+  saveFieldType = (event) => {
     this.props.saveFieldType(event.target.value)
   }
   render() {
     return(
-      <select name='fieldType' onChange={this.saveFieldType.bind(this)}>
+      <select name='fieldType' onChange={this.saveFieldType}>
         <option value='radio'>radio</option>
         <option value='checkbox'>checkbox</option>
         <option value='text'>input</option>
@@ -106,12 +107,12 @@ class AnswerOption extends React.Component {
         answerOption: ''
       };
   }
-  saveAnswerOption(event) {
+  saveAnswerOption = (event) => {
     this.setState({
       answerOption: event.target.value
     });
   }
-  addAnswer() {
+  addAnswer = () => {
     this.props.addAnswer(this.state.answerOption)
     this.setState({
       answerOption:''
@@ -121,8 +122,8 @@ class AnswerOption extends React.Component {
     return(
       <div style={{display: 'inline'}}>
         <input name='answerOption' placeholder='Answer option'
-                    value={this.state.answerOption} onChange={this.saveAnswerOption.bind(this)}/>
-                  <input type='button' value='Add answer' onClick={this.addAnswer.bind(this)}/>
+                    value={this.state.answerOption} onChange={this.saveAnswerOption}/>
+                  <input type='button' value='Add answer' onClick={this.addAnswer}/>
       </div>
     )
   }
@@ -144,5 +145,5 @@ class SurveysBox extends React.Component {
   }
 };
 ReactDOM.render( <SurveysBox/>,
-  document.getElementById('content')
+  document.getElementById('create-survey-form')
 )
