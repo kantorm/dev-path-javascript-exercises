@@ -4,8 +4,11 @@ var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var pug = require('pug');
+var fs = require('fs');
+var browserify = require('browserify');
 
 var uri = "mongodb://localhost:12345/data";
+
 var surveysArray = [];
 var questionsArray = []
 var givenCount = 0;
@@ -15,6 +18,7 @@ var textQuestions = [];
 var textAnswersArray = [];
 
 var urlencodedParser = bodyParser.urlencoded({extended: true})
+
 //finding surveys in database before rendering
 MongoClient.connect(uri, function(error, db){
   if (error)
@@ -26,10 +30,14 @@ app.use(express.static('public'));
 app.set('view engine', 'pug');
 
 app.get('/', function(req, res) {
+  browserify("./views/splited.jsx")
+    .transform("babelify", {presets: ["es2015", "react", "stage-0"]})
+    .bundle()
+    .pipe(fs.createWriteStream("./views/bundle.js"));
   res.render('index', {answers: [], surveys: surveysArray, toHighChart: [], textAnswersArray: [], textQuestions: []});
 });
 
-//rendering specified survey that is sarleady stored in db
+//rendering specified survey that is arleady stored in db
 app.get('/surveys/:surveyName', function(req, res) {
   var surveyName = req.params['surveyName'].replace(/-|_/g, ' ')
   var toGenerate = []
@@ -65,8 +73,8 @@ app.post('/surveys/:surveyName/results', urlencodedParser, function (req, res) {
     db.collection('answers').insertOne(req.body, function(err, result) {
       assert.equal(err, null);
       console.log('Inserted a document into the answers collection.');
-     findQuestions(db, req.body)
-       //aggregation
+      //aggregation
+      findQuestions(db, req.body)
       aggregateAnswers(db, req.body, res)
     })
   });
@@ -125,7 +133,7 @@ function findSurveys(db) {
       }
     })
 }
-// building questions array
+//building questions array
 function findQuestions(db, response) {
   var cursor = db.collection('surveys').find();
     cursor.each(function(err, doc) {
@@ -141,7 +149,7 @@ function findQuestions(db, response) {
 function answersCount(db, response) {
   textQuestions = []
   questionsArray.forEach(function(question) {
-    if(question.fieldType != 'input') {
+    if(question.fieldType != 'text') {
       var toChartObj = {};
       var countersArray = [];
 
@@ -168,7 +176,7 @@ function answersCount(db, response) {
           });
       });
     } else {
-        textQuestions.push(question.questionName+'\r\n                ')
+        textQuestions.push(question.questionName)
         textAnswers(db, question, response)
       }
   })
