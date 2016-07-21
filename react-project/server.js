@@ -1,27 +1,26 @@
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
-var pug = require('pug');
-var fs = require('fs');
- 
-var uri = "mongodb://localhost:12345/data";
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+const pug = require('pug');
 
-var surveysArray = [];
-var questionsArray = []
-var givenCount = 0;
-var allCount = 0;
-var toHighChart = [];
-var textQuestions = [];
-var textAnswersArray = [];
+const uri = "mongodb://localhost:12345/data";
 
-var urlencodedParser = bodyParser.urlencoded({
+let surveysArray = [];
+let questionsArray = []
+let givenCount = 0;
+let allCount = 0;
+let toHighChart = [];
+let textQuestions = [];
+let textAnswersArray = [];
+
+let urlencodedParser = bodyParser.urlencoded({
     extended: true
 })
 
 //finding surveys in database before rendering
-MongoClient.connect(uri, function(error, db) {
+MongoClient.connect(uri, (error, db) => {
     if (error)
         return console.log(error);
     findSurveys(db);
@@ -30,7 +29,7 @@ MongoClient.connect(uri, function(error, db) {
 app.use(express.static('public'));
 app.set('view engine', 'pug');
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
     res.render('index', {
         answers: [],
         surveys: surveysArray,
@@ -41,11 +40,11 @@ app.get('/', function(req, res) {
 });
 
 //rendering specified survey that is arleady stored in db
-app.get('/surveys/:surveyName', function(req, res) {
-    var surveyName = req.params['surveyName'].replace(/-|_/g, ' ')
-    var toGenerate = []
+app.get('/surveys/:surveyName', (req, res) => {
+    let surveyName = req.params['surveyName'].replace(/-|_/g, ' ')
+    let toGenerate = []
 
-    surveysArray.forEach(function(survey) {
+    surveysArray.forEach((survey) => {
         if (survey.surveyName == surveyName) {
             toGenerate.push(survey);
         }
@@ -60,12 +59,12 @@ app.get('/surveys/:surveyName', function(req, res) {
 });
 
 //saving surveys in database
-app.post('/surveys', urlencodedParser, function(req, res) {
-    MongoClient.connect(uri, function(error, db) {
+app.post('/surveys', urlencodedParser, (req, res)  => {
+    MongoClient.connect(uri, (error, db) => {
         if (error)
             return console.log(error);
 
-        db.collection('surveys').insertOne(req.body, function(err, result) {
+        db.collection('surveys').insertOne(req.body, (err, result) => {
             assert.equal(err, null);
             console.log('Inserted a document into the surveys collection.');
         });
@@ -73,13 +72,13 @@ app.post('/surveys', urlencodedParser, function(req, res) {
     });
 })
 
-app.post('/surveys/:surveyName/results', urlencodedParser, function(req, res) {
+app.post('/surveys/:surveyName/results', urlencodedParser, (req, res) => {
     //Adding answers in database
-    MongoClient.connect(uri, function(error, db) {
+    MongoClient.connect(uri, (error, db)  => {
         if (error)
             return console.log(error);
 
-        db.collection('answers').insertOne(req.body, function(err, result) {
+        db.collection('answers').insertOne(req.body, (err, result) => {
             assert.equal(err, null);
             console.log('Inserted a document into the answers collection.');
             //aggregation
@@ -92,13 +91,13 @@ app.post('/surveys/:surveyName/results', urlencodedParser, function(req, res) {
 
 //aggregation function
 function aggregateAnswers(db, response, resp) {
-    var obj = {};
-    var flag = true;
-    for (var prop in response) {
+    let obj = {};
+    let flag = true;
+    for (let prop in response) {
         if (prop != 'surveyName' && prop != '_id')
             obj[prop] = response[prop]
     }
-    for (var question in obj) {
+    for (let question in obj) {
         db.collection('answers').aggregate(
             [{
                 $match: {
@@ -113,7 +112,7 @@ function aggregateAnswers(db, response, resp) {
                         $sum: 1
                     }
                 }
-            }]).toArray(function(err, result) {
+            }]).toArray((err, result) => {
             assert.equal(err, null);
             givenCount = result[0].count;
             if (flag) {
@@ -138,7 +137,7 @@ function allAnswers(db, response, resp) {
                     $sum: 1
                 }
             }
-        }]).toArray(function(err, result) {
+        }]).toArray((err, result) => {
         assert.equal(err, null);
         allCount = result[0].count;
         resp.render('index', {
@@ -154,9 +153,9 @@ function allAnswers(db, response, resp) {
 }
 //finding surveys to pass to generate function
 function findSurveys(db) {
-    var array = [];
-    var cursor = db.collection('surveys').find();
-    cursor.each(function(err, doc) {
+    let array = [];
+    let cursor = db.collection('surveys').find();
+    cursor.each((err, doc) => {
         assert.equal(err, null);
         if (doc != null) {
             array.push(doc);
@@ -169,8 +168,8 @@ function findSurveys(db) {
 }
 //building questions array
 function findQuestions(db, response) {
-    var cursor = db.collection('surveys').find();
-    cursor.each(function(err, doc) {
+    let cursor = db.collection('surveys').find();
+    cursor.each((err, doc) => {
         assert.equal(err, null);
         if (doc != null && doc.surveyName == response.surveyName) {
             questionsArray = doc.questions;
@@ -182,16 +181,16 @@ function findQuestions(db, response) {
 //counting answers for each asnwer option for ech question in survey
 function answersCount(db, response) {
     textQuestions = []
-    questionsArray.forEach(function(question) {
+    questionsArray.forEach((question) => {
         if (question.fieldType != 'text') {
-            var toChartObj = {};
-            var countersArray = [];
+            let toChartObj = {};
+            let countersArray = [];
 
             toChartObj['questionName'] = question.questionName;
             toChartObj['answerOptions'] = question.answers;
             toChartObj['answers'] = [];
-            question.answers.forEach(function(answerOption) {
-                var matcher = {};
+            question.answers.forEach((answerOption) => {
+                let matcher = {};
                 matcher[question.questionName] = answerOption
                 db.collection('answers').aggregate(
                     [{
@@ -207,7 +206,7 @@ function answersCount(db, response) {
                                 $sum: 1
                             }
                         }
-                    }]).toArray(function(err, result) {
+                    }]).toArray((err, result) => {
                     assert.equal(err, null)
                     if (result.length == 0) {
                         toChartObj.answers.push(0);
@@ -227,19 +226,19 @@ function answersCount(db, response) {
 }
 //finding input text answers for listening
 function textAnswers(db, question, response) {
-    var cursor = db.collection('answers').find({
+    let cursor = db.collection('answers').find({
         'surveyName': response.surveyName
     })
-    cursor.each(function(err, doc) {
+    cursor.each((err, doc) => {
         assert.equal(err, null);
         textAnswersArray.push(doc);
     })
 }
 
-var server = app.listen(8080, function() {
+const server = app.listen(8080, () => {
 
-    var host = server.address().address
-    var port = server.address().port
+    const host = server.address().address
+    const port = server.address().port
 
     console.log("React survey app listening at http://%s:%s", host, port)
 
