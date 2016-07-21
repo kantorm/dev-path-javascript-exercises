@@ -1,39 +1,39 @@
 doctype html
 html
-  head
-    script(src= 'https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js')
-    script(src= 'http://code.highcharts.com/highcharts.js')
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react.js")
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react-dom.js")
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js")
-    body
-      div#create-survey-form
-      script(type='text/babel')
-        include splited-es5.jsx
-      div#from-database
-      script(type='text/babel')
-        include generateFromDb.jsx
-      div#charts
-      script
-          include highcharts.js
-      script.
-          surveysArray = !{JSON.stringify(surveys)}
-          toHighChart = !{JSON.stringify(toHighChart)}
-          for (let pattern of toHighChart) {
-            $('#charts').append(`<div id=${pattern.questionName.replace(/\s/g, '-')}>`)
-            generateHighChart(pattern)
-          }
-      if answers != 0
-        div#user-answers
-          h3= 'Twoje odpowiedzi'
-          ul
-            each answer, question in answers
-              if question != '_id' && question != 'surveyName'
-                li= question + ': ' + answer
-                -var percent = Math.round((givenAnswersCount/allAnswersCount)*100)
-        p= 'Takiej samej odpowiedzi udzielono '+givenAnswersCount+' razy. To jest '+percent+'% wszystkich odpowiedzi'
-        div#listing
-          script.
-            textQuestions = !{JSON.stringify(textQuestions)}
-            textAnswersArray = !{JSON.stringify(textAnswersArray)}
-            listingAnswers(textQuestions, textAnswersArray)
+    head
+        script(src= 'https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js')
+        script(src= 'http://code.highcharts.com/highcharts.js')
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react.js")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.0/react-dom.js")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js")
+        body
+            div#create-survey-form
+            script(type='text/babel')
+                include bundle.js
+            div#from-database
+            script(type='text/babel')
+                include generateFromDb.jsx
+            div#charts
+            script
+                include highcharts.js
+            script.
+                surveysArray = !{JSON.stringify(surveys)}
+                toHighChart = !{JSON.stringify(toHighChart)}
+                for (let pattern of toHighChart) {
+                    $('#charts').append(`<div id=${pattern.questionName.replace(/\s/g, '-')}>`)
+                    generateHighChart(pattern)
+                }
+            if answers != 0
+                div#user-answers
+                    h3= 'Twoje odpowiedzi'
+                    ul
+                        each answer, question in answers
+                            if question != '_id' && question != 'surveyName'
+                                li= question + ': ' + answer
+                                -var percent = Math.round((givenAnswersCount/allAnswersCount)*100)
+                p= 'Takiej samej odpowiedzi udzielono '+givenAnswersCount+' razy. To jest '+percent+'% wszystkich odpowiedzi'
+                div#listing
+                    script.
+                        textQuestions = !{JSON.stringify(textQuestions)}
+                        textAnswersArray = !{JSON.stringify(textAnswersArray)}
+                        listingAnswers(textQuestions, textAnswersArray)
